@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الأدمن — معرض الأعمال</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f59e0b">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- الخطوط — مُحسَّنة مثل index.html: بلا Playfair Display وبلا أوزان 800/900 -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=33">
+  <style>
+    .admin-nav { display: flex; gap: var(--space-xs); flex-wrap: wrap; }
+    .admin-tab { border: 1px solid var(--color-outline-variant); background: transparent;
+      color: var(--color-on-surface-variant); cursor: pointer; border-radius: var(--radius-default);
+      padding: 0 var(--space-sm); height: 32px; font-size: .8125rem; transition: all .15s ease; }
+    .admin-tab.active { background: var(--color-primary-container); color: var(--color-on-primary-container); border-color: transparent; }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+    .data-table th, .data-table td { text-align: start; padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-outline-variant); }
+    .data-table th { font-family: var(--font-label); font-size: .6875rem; font-weight: 500;
+      letter-spacing: .02em; text-transform: uppercase; color: var(--color-on-surface-variant); }
+    .data-table tbody tr:hover { background: var(--color-surface-container-low); }
+    textarea.input { height: auto; min-height: 120px; padding: var(--space-sm);
+      font-family: var(--font-mono); font-size: .75rem; line-height: 1.5; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); }
+    /* مبدّل نوع المحفظة (رقمية / محلية) */
+    .seg { display: inline-flex; border: 1px solid var(--color-outline-variant); border-radius: var(--radius-default); overflow: hidden; }
+    .seg-btn { height: 32px; padding: 0 var(--space-md); font-size: .8125rem; background: transparent;
+      color: var(--color-on-surface-variant); border: 0; cursor: pointer; transition: all .15s ease; }
+    .seg-btn + .seg-btn { border-inline-start: 1px solid var(--color-outline-variant); }
+    .seg-btn.active { background: var(--color-primary-container); color: var(--color-on-primary-container); font-weight: 600; }
+    .badge-local { background: rgba(31,197,156,.12); color: var(--color-on-success-container); border-color: rgba(31,197,156,.3); }
+    /* حقول التسليم: تُبنى بحسب النمط المختار — الباقي لا يُرسم */
+    .dv-field { margin-bottom: var(--space-sm); }
+  </style>
+</head>
+<body class="bg-background text-on-surface custom-scroll">
+
+  <!-- بوابة الدخول (أداة محلية — ليست حماية خادم) -->
+  <div id="gateScreen" class="min-h-screen flex items-center justify-center" style="padding:var(--space-lg)">
+    <div class="card p-space-lg" style="max-width:380px;width:100%">
+      <div class="text-center mb-space-md">
+        <span class="material-symbols-outlined text-primary" style="font-size:44px">admin_panel_settings</span>
+        <h1 class="font-headline-lg mt-space-sm">لوحة الأدمن</h1>
+        <p class="font-body-sm text-on-surface-variant">أداة محلية لإدارة بيانات المعرض</p>
+      </div>
+      <div>
+        <div id="gateWarn" class="legal-note" style="display:none;margin:0 0 var(--space-sm);border-inline-start:3px solid var(--color-error);background:var(--color-surface-container-lowest);border-radius:var(--radius-default);padding:var(--space-sm) var(--space-md)">
+          <p class="font-body-sm" style="margin:0">
+            <strong>تنبيه:</strong> الدخول حالياً بكلمة مرور محلية فقط — لا يتحقّق منه الخادم.
+            لتفعيل حماية حقيقية: اضبط <code class="font-code-sm" dir="ltr">adminEmail</code> في الإعدادات
+            وأنشئ المستخدم في Supabase → Authentication.
+          </p>
+        </div>
+        <label class="field-label" for="gateEmail" id="gateEmailLabel" style="display:none">بريد الأدمن</label>
+        <input id="gateEmail" type="email" class="input" dir="ltr" placeholder="admin@example.com" autocomplete="username" style="display:none">
+        <label class="field-label" for="gatePass" style="margin-top:var(--space-sm)">كلمة مرور الأدمن</label>
+        <input id="gatePass" type="password" class="input" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="btn btn-primary btn-size-md btn-block mt-space-sm" id="gateEnter">دخول</button>
+        <p id="gateHint" class="font-body-sm text-on-surface-variant mt-space-sm" style="opacity:.7">
+          أول تشغيل؟ اكتب كلمة مرور جديدة وستُحفظ محلياً على هذا الجهاز فقط.
+        </p>
+        <button type="button" id="gateReset" class="btn btn-ghost btn-size-sm mt-space-xs" style="width:100%">
+          نسيت كلمة المرور؟ إعادة تعيين محلية
+        </button>
+        <!-- مخرج طوارئ: ضبط بريد الأدمن كان **يقفل اللوحة نهائياً** إن فشل
+             دخول Supabase (لا مسار بديل). واللوحة أداة المالك — والحماية
+             الحقيقية في القاعدة نفسها لا في هذه البوابة. -->
+        <div id="localFallback" style="display:none;margin-top:var(--space-md);border-top:1px solid var(--color-outline-variant);padding-top:var(--space-md)">
+          <button type="button" id="gateLocalBtn" class="btn btn-secondary btn-size-md" style="width:100%">
+            الدخول بالوضع المحلي (بلا حساب Supabase)
+          </button>
+          <small class="font-body-sm text-on-surface-variant" style="display:block;margin-top:6px">
+            تُدار المنتجات والإعدادات في هذا المتصفح فقط — وتأكيد الطلبات يحتاج
+            <b>سرّ التأكيد</b> (من <code class="font-code-sm" dir="ltr">supabase-admin-confirm.sql</code>)، لا الحساب.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- لوحة التحكم -->
+  <div id="adminApp" style="display:none">
+    <header class="bg-surface-container border-b border-surface sticky top-0 z-50">
+      <div class="container-main flex items-center justify-between" style="height:60px">
+        <div class="flex items-center gap-space-sm">
+          <span class="material-symbols-outlined text-primary">dashboard</span>
+          <span class="font-headline-md">إدارة المعرض</span>
+        </div>
+        <div class="flex items-center gap-space-sm">
+          <a href="index.html" target="_blank" rel="noopener" class="btn btn-ghost btn-size-sm">عرض الموقع</a>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="lockBtn">قفل</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-main" style="padding-block:var(--space-lg)">
+      <div id="modeBanner" style="display:none;margin-bottom:var(--space-md)"></div>
+      <nav class="admin-nav mb-space-lg" id="adminTabs">
+        <button class="admin-tab active" data-tab="products">المنتجات</button>
+        <button class="admin-tab" data-tab="wallets">المحافظ</button>
+        <button class="admin-tab" data-tab="orders">الطلبات</button>
+        <button class="admin-tab" data-tab="suggestions">الاقتراحات</button>
+        <button class="admin-tab" data-tab="settings">الإعدادات</button>
+        <button class="admin-tab" data-tab="sync">مزامنة GitHub</button>
+      </nav>
+
+      <!-- ═══ بطاقات الإحصاءات ═══ -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-lg" id="adminStats">
+        <div class="card p-space-lg">
+          <div class="flex items-center justify-between mb-space-xs">
+            <span class="font-label-sm text-on-surface-variant">المنتجات</span>
+            <span class="material-symbols-outlined text-primary" style="font-size:18px">inventory_2</span>
+          </div>
+          <div class="font-num text-primary" style="font-size:1.75rem;line-height:1.2" id="statTotalProducts">—</div>
+          <div class="font-body-sm text-on-surface-variant" id="statActiveProducts">—</div>
+        </div>
+        <div class="card p-space-lg">
+          <div class="flex items-center justify-between mb-space-xs">
+            <span class="font-label-sm text-on-surface-variant">التنزيلات</span>
+            <span class="material-symbols-outlined text-primary" style="font-size:18px">download</span>
+          </div>
+          <div class="font-num text-primary" style="font-size:1.75rem;line-height:1.2" id="statDownloads">—</div>
+          <div class="font-body-sm text-on-surface-variant">إجمالي التحميلات</div>
+        </div>
+        <div class="card p-space-lg">
+          <div class="flex items-center justify-between mb-space-xs">
+            <span class="font-label-sm text-on-surface-variant">الطلبات</span>
+            <span class="material-symbols-outlined text-primary" style="font-size:18px">receipt_long</span>
+          </div>
+          <div class="font-num text-primary" style="font-size:1.75rem;line-height:1.2" id="statOrders">—</div>
+          <div class="font-body-sm text-on-surface-variant" id="statPendingOrders">—</div>
+        </div>
+        <div class="card p-space-lg">
+          <div class="flex items-center justify-between mb-space-xs">
+            <span class="font-label-sm text-on-surface-variant">مفاتيح الترخيص</span>
+            <span class="material-symbols-outlined text-primary" style="font-size:18px">key</span>
+          </div>
+          <div class="font-num text-primary" style="font-size:1.75rem;line-height:1.2" id="statKeys">—</div>
+          <div class="font-body-sm text-on-surface-variant" id="statKeysNote">—</div>
+        </div>
+      </div>
+
+      <section class="admin-panel active" id="panel-products">
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-size-sm" id="addProductBtn">+ منتج جديد</button>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="exportProductsBtn">تصدير products.json</button>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="importProductsBtn">استيراد JSON</button>
+          <input type="file" id="importProductsInput" accept="application/json,.json" hidden>
+          <span class="font-body-sm text-on-surface-variant" id="productsCount"></span>
+        </div>
+        <div id="deliveryAlert" style="display:none;align-items:flex-start;gap:var(--space-sm);border:1px solid var(--color-warning);background:var(--color-surface-container-low);border-radius:var(--radius-default);padding:var(--space-sm) var(--space-md);margin-bottom:var(--space-md)" class="text-warning"></div>
+        <div class="card" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>المنتج</th><th>النوع</th><th>السعر</th><th>الإصدار</th><th>مفاتيح الترخيص</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="productsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-wallets">
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-size-sm" id="addWalletBtn">+ محفظة جديدة</button>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="exportWalletsBtn">تصدير wallets.json</button>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="importWalletsBtn">استيراد JSON</button>
+          <input type="file" id="importWalletsInput" accept="application/json,.json" hidden>
+          <span class="font-body-sm text-on-surface-variant" id="walletsCount"></span>
+        </div>
+        <div id="paymentsAlert" style="display:none;align-items:flex-start;gap:var(--space-sm);border:1px solid var(--color-warning);background:var(--color-surface-container-low);border-radius:var(--radius-default);padding:var(--space-sm) var(--space-md);margin-bottom:var(--space-md)" class="text-warning"></div>
+        <div class="card" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>النوع</th><th>الاسم الظاهر</th><th>التفاصيل</th><th>الاستقبال</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="walletsTableBody"></tbody>
+          </table>
+        </div>
+        <p class="font-body-sm text-on-surface-variant mt-space-sm">
+          كل المحافظ المُفعّلة والمُعدّة تظهر للمشتري في صفحة الدفع وهو يختار — بلا فلترة وبلا ربط بمنتج.
+          والمحفظة الناقصة (بلا عنوان أو بلا رقم حساب) لا تصل للواجهة إطلاقاً.
+        </p>
+      </section>
+
+      <section class="admin-panel" id="panel-orders">
+        <div class="toolbar">
+          <span class="font-body-sm text-on-surface-variant">الطلبات من قاعدة البيانات عند الاتصال، وإلا المحفوظة في هذا المتصفح.</span>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="ordersRefreshBtn">
+            <span class="material-symbols-outlined" style="font-size:14px">refresh</span> تحديث
+          </button>
+        </div>
+        <!-- تشخيص: هل يستطيع المشتري رؤية تأكيدك؟ -->
+        <div id="trackingDiag" style="display:none;align-items:flex-start;gap:var(--space-sm);border-radius:var(--radius-default);padding:var(--space-sm) var(--space-md);margin-bottom:var(--space-md);border:1px solid var(--color-outline-variant)"></div>
+        <div class="card" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>المرجع</th><th>المنتج</th><th>المبلغ</th><th>الطريقة</th><th>المشتري</th><th>إثبات الدفع</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-suggestions">
+        <div class="toolbar">
+          <button type="button" class="btn btn-secondary btn-size-sm" id="exportSuggestionsBtn">تصدير الاقتراحات</button>
+        </div>
+        <div class="card" style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>الاسم</th><th>الفكرة</th><th>التاريخ</th><th></th></tr></thead>
+            <tbody id="suggestionsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-settings">
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-size-sm" id="saveSettingsBtn">حفظ محلياً</button>
+          <button type="button" class="btn btn-secondary btn-size-sm" id="exportSettingsBtn">تصدير settings.json</button>
+        </div>
+        <div class="card p-space-lg mb-space-md">
+          <h3 class="font-headline-md mb-space-sm">🪪 الهوية والمحتوى</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div><label class="field-label">اسم المنصة</label><input id="setPlatformName" class="input"></div>
+            <div><label class="field-label">الاسم الإنجليزي</label><input id="setPlatformNameEn" class="input" dir="ltr" placeholder="Work Showcase"></div>
+            <div><label class="field-label">حرف الشعار</label><input id="setLogoLetter" class="input" maxlength="2" placeholder="ن"></div>
+            <div><label class="field-label">صورة الشعار (اختياري)</label>
+              <div class="wallet-drop" id="setLogoDrop">
+                <span class="material-symbols-outlined">add_photo_alternate</span>
+                <span class="font-body-sm">ارفع صورة الشعار</span>
+                <input id="setLogoInput" type="file" accept="image/*" hidden>
+              </div>
+              <div class="wallet-preview" id="setLogoPreview"></div>
+            </div>
+            <div><label class="field-label">عنوان الهيرو</label><input id="setHeroTitle" class="input"></div>
+            <div><label class="field-label">شارة الهيرو</label><input id="setHeroBadge" class="input" placeholder="بلا سيرفر · PWA · GitHub Pages"></div>
+            <div class="col-span-full"><label class="field-label">وصف الهيرو</label><input id="setHeroSub" class="input"></div>
+            <div><label class="field-label">اسم المطوّر</label><input id="setDevName" class="input"></div>
+            <div><label class="field-label">لقب المطوّر</label><input id="setDevTitle" class="input"></div>
+            <div><label class="field-label">بريد التواصل</label><input id="setContactEmail" class="input" dir="ltr"></div>
+            <div><label class="field-label">واتساب (بصيغة دولية بلا +)</label><input id="setContactWhatsapp" class="input" dir="ltr" placeholder="9639xxxxxxxx">
+              <small class="font-body-sm text-on-surface-variant">يُستخدم لزر «أرسل الإثبات عبر واتساب» في صفحة الدفع.</small></div>
+            <div><label class="field-label">GitHub (رابط)</label><input id="setContactGithub" class="input" dir="ltr" placeholder="https://github.com/..."></div>
+            <div><label class="field-label">LinkedIn (رابط)</label><input id="setContactLinkedin" class="input" dir="ltr" placeholder="https://linkedin.com/in/..."></div>
+            <div><label class="field-label">الثيم الافتراضي</label>
+              <select id="setThemeDefault" class="input"><option value="dark">داكن</option><option value="light">فاتح</option></select></div>
+            <div class="flex items-center gap-space-sm"><input id="setThemeAllowToggle" type="checkbox" checked style="width:16px;height:16px;accent-color:var(--color-primary)"><label class="field-label" style="margin:0">السماح للزائر بتبديل الثيم</label></div>
+          </div>
+        </div>
+        <!-- ═══ مصادقة الأدمن ═══
+             ⚠️ كان الكود يطلب من الأدمن «اضبط adminEmail في الإعدادات» ولا يوجد
+             حقل له في اللوحة إطلاقاً — طريق مسدود حقيقي. وهذا بالضبط ما يمنع
+             تأكيد الطلبات: سياسات القاعدة تسمح بالتأكيد للموثّقين فقط، وبلا
+             تسجيل دخول تبقى الهوية «anon» فتُرفض الكتابة. -->
+        <div class="card p-space-lg mb-space-md">
+          <h3 class="font-headline-md mb-space-sm">🔐 مصادقة الأدمن</h3>
+          <p class="font-body-sm text-on-surface-variant mb-space-md">
+            لتأكيد الطلبات فعلياً في قاعدة البيانات، يجب أن تكون **موثّقاً** — لأن سياسات الأمان
+            تسمح بالتأكيد للموثّقين فقط، وتمنع الزائر من تعديل أي طلب.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div><label class="field-label">بريد الأدمن (Supabase Auth)</label>
+              <input id="setAdminEmail" class="input" dir="ltr" placeholder="admin@example.com">
+              <small class="font-body-sm text-on-surface-variant">اتركه فارغاً لتبقى البوابة المحلية — لكن التأكيد لن يصل للقاعدة.</small>
+            </div>
+            <div class="flex flex-col justify-end">
+              <div id="authState" class="font-body-sm text-on-surface-variant" style="padding:var(--space-sm) 0"></div>
+            </div>
+          </div>
+          <div class="col-span-full mt-space-sm">
+            <label class="field-label" for="setConfirmSecret">سرّ تأكيد الطلبات (يعمل بلا أي حساب)</label>
+            <div class="flex gap-space-sm">
+              <input id="setConfirmSecret" class="input" type="password" dir="ltr" autocomplete="off" placeholder="الصق السرّ من supabase-admin-confirm.sql">
+              <button type="button" class="btn btn-primary btn-size-sm flex-none" id="saveSecretBtn">حفظ</button>
+              <button type="button" class="btn btn-ghost btn-size-sm flex-none" id="clearSecretBtn">مسح</button>
+            </div>
+            <small class="font-body-sm text-on-surface-variant">
+              يُحفظ في <b>هذا المتصفح فقط</b> — لا يُنشر في أي ملف عام. شغّل
+              <code class="font-code-sm" dir="ltr">supabase-admin-confirm.sql</code> مرة واحدة من محرّر SQL، والصق السرّ نفسه هنا.
+            </small>
+            <div id="secretState" class="font-body-sm mt-space-xs"></div>
+          </div>
+
+          <ol class="font-body-sm text-on-surface-variant mt-space-md" style="padding-inline-start:1.1rem;line-height:1.9">
+            <li>افتح <a id="authUsersLink" href="#" target="_blank" rel="noopener" class="text-primary">صفحة مستخدمي Supabase</a> (أو: Authentication → Users) واضغط <b>Add user</b> — أنشئ مستخدماً ببريدك وكلمة مرور.</li>
+            <li>اكتب البريد نفسه في الحقل أعلاه، ثم <b>حفظ محلياً</b> و<b>تصدير settings.json</b> (أو ادفعه إلى GitHub).</li>
+            <li>أعد تحميل اللوحة — ستظهر خانتا البريد وكلمة المرور. سجّل دخولك، وسيعمل التأكيد ويظهر للمشتري.</li>
+          </ol>
+          <p class="font-body-sm text-on-surface-variant mt-space-sm">
+            بعد الدخول ستقرأ اللوحة <b>كل</b> طلبات القاعدة — لا طلبات هذا المتصفح فقط.
+          </p>
+        </div>
+
+        <div class="card p-space-lg mb-space-md">
+          <h3 class="font-headline-md mb-space-sm">💳 طرق الدفع</h3>
+          <p class="font-body-sm text-on-surface-variant">
+            الدفع في هذا المتجر <b>محافظ فقط</b> — رقمية (USDT · BTC) أو محلية (شام كاش+ · فودافون كاش …).
+            لا وسطاء ولا بطاقات ولا بنوك، فلا يوجد ما يُعدّ هنا.
+          </p>
+          <p class="font-body-sm text-on-surface-variant mt-space-sm">
+            تُدار المحافظ كلها من تبويب <b>«المحافظ»</b>: نظام واحد يغطّي النوعين، وكل ما تضيفه يظهر للمشتري فوراً.
+          </p>
+        </div>
+        <div class="card p-space-lg mb-space-md">
+          <div class="flex items-center justify-between mb-space-sm">
+            <h3 class="font-headline-md">🎟️ كوبونات الخصم</h3>
+            <button type="button" class="btn btn-secondary btn-size-sm" id="addCouponBtn">+ كوبون جديد</button>
+          </div>
+          <div id="setCouponsList" class="flex flex-col gap-space-sm"></div>
+        </div>
+        <div class="card p-space-lg">
+          <h3 class="font-headline-md mb-space-sm">🔌 التكاملات</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div><label class="field-label">GitHub Repo (owner/name)</label><input id="setGithubRepo" class="input" placeholder="nova-dev/showcase"></div>
+            <div><label class="field-label">الفرع</label><input id="setGithubBranch" class="input" placeholder="main"></div>
+            <div class="col-span-full"><label class="field-label">GitHub Token (يُخزن محلياً فقط — لا يُصدَّر)</label>
+              <input id="setGithubToken" type="password" class="input" placeholder="ghp_..."></div>
+            <div class="col-span-full"><label class="field-label">رابط استقبال الطلبات (Endpoint) — إنتاجي</label>
+              <input id="setPurchasesEndpoint" class="input" dir="ltr" placeholder="https://formspree.io/f/xxxxxxxx">
+              <small class="font-body-sm text-on-surface-variant">يُرسل إليه كل طلب جديد تلقائياً (Formspree · Google Sheets · Web3Forms · Getform). اتركه فارغاً ليبقى الحفظ في متصفح المشتري فقط.</small></div>
+            <div class="col-span-full"><label class="field-label">قاعدة البيانات أونلاين — Supabase (اختياري)</label>
+              <input id="setSupabaseUrl" class="input" dir="ltr" placeholder="https://xxxxxxx.supabase.co" style="margin-bottom:var(--space-xs)">
+              <input id="setSupabaseKey" class="input" dir="ltr" placeholder="anon public key — eyJhbGci...">
+              <small class="font-body-sm text-on-surface-variant">بوضعهما يعمل كل شيء أونلاين: المنتجات والطلبات والاقتراحات من قاعدة واحدة، ويظهر تأكيدك فوراً للمشتري. المفتاح anon عام بطبعه وآمن للنشر. اتركهما فارغين ليبقى الموقع يعمل محلياً.</small>
+              <button type="button" class="btn btn-secondary btn-size-sm" id="testSupabaseBtn" style="margin-top:var(--space-xs)">
+                <span class="material-symbols-outlined" style="font-size:14px">network_check</span>اختبار الاتصال
+              </button>
+              <button type="button" class="btn btn-primary btn-size-sm" id="migrateSupabaseBtn" style="margin-top:var(--space-xs)">
+                <span class="material-symbols-outlined" style="font-size:14px">cloud_upload</span>رفع المنتجات الحالية للقاعدة
+              </button>
+              <span class="font-body-sm text-on-surface-variant" id="supabaseStatus" style="margin-top:var(--space-xs);display:block"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-sync">
+        <div class="card p-space-lg">
+          <h3 class="font-headline-md mb-space-sm">رفع التغييرات إلى GitHub</h3>
+          <p class="font-body-sm text-on-surface-variant mb-space-md">
+            يدفع ملفات <code class="font-code-sm">data/products.json</code> و <code class="font-code-sm">data/settings.json</code>
+            إلى المستودع عبر GitHub API. يحتاج توكن بصلاحية <code class="font-code-sm">repo</code>.
+          </p>
+          <div class="toolbar">
+            <label class="btn btn-secondary btn-size-sm" style="cursor:pointer">
+              <input type="checkbox" id="syncProducts" checked> products.json
+            </label>
+            <label class="btn btn-secondary btn-size-sm" style="cursor:pointer">
+              <input type="checkbox" id="syncSettings" checked> settings.json
+            </label>
+            <label class="btn btn-secondary btn-size-sm" style="cursor:pointer">
+              <input type="checkbox" id="syncWallets" checked> wallets.json
+            </label>
+            <input id="commitMessage" class="input" style="max-width:320px" placeholder="رسالة الالتزام (commit)">
+            <button type="button" class="btn btn-primary btn-size-sm" id="pushBtn">دفع التغييرات</button>
+          </div>
+          <pre id="syncLog" class="font-code-sm custom-scroll" style="background:var(--color-surface-container-lowest);border:1px solid var(--color-outline-variant);border-radius:var(--radius-default);padding:var(--space-md);min-height:140px;white-space:pre-wrap;color:var(--color-on-surface-variant)">— سجل المزامنة —</pre>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- مودال إضافة/تحرير محفظة (كمرجع add_wallet_modal: شبكة → عنوان مع تحقق → تسمية → توجيه) -->
+  <div class="modal-overlay" id="walletModal" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width:680px">
+      <button type="button" class="modal-close" data-close="walletModal" aria-label="إغلاق">✕</button>
+      <div class="modal-header"><h3 class="font-headline-md" id="walletModalTitle">محفظة جديدة</h3></div>
+      <div class="modal-body">
+        <!-- نوع المحفظة — يحدّد الحقول الظاهرة. الباقي لا يُرسم. -->
+        <div class="mb-space-md">
+          <label class="field-label">نوع المحفظة</label>
+          <div class="seg" id="wTypeSeg">
+            <button type="button" class="seg-btn active" data-wtype="crypto">محفظة رقمية</button>
+            <button type="button" class="seg-btn" data-wtype="local">محفظة محلية</button>
+          </div>
+          <p class="font-body-sm text-on-surface-variant mt-space-xs" id="wTypeHint"></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="col-span-full"><label class="field-label">الاسم الظاهر للزائر *</label>
+            <input id="wLabel" class="input" placeholder="USDT — Binance · شام كاش+ · فودافون كاش"></div>
+
+          <!-- ══ حقول المحفظة الرقمية ══ -->
+          <div class="w-crypto"><label class="field-label">الشبكة *</label>
+            <select id="wNetwork" class="input">
+              <option value="TRC20">Tron — TRC20 (USDT)</option>
+              <option value="ERC20">Ethereum — ERC20</option>
+              <option value="BEP20">BNB Smart Chain — BEP20</option>
+              <option value="BTC">Bitcoin — Native SegWit</option>
+              <option value="SOL">Solana — SPL</option>
+              <option value="OTHER">أخرى</option>
+            </select></div>
+          <div class="w-crypto"><label class="field-label">العملة</label>
+            <input id="wCurrency" class="input" dir="ltr" placeholder="USDT" value="USDT"></div>
+          <div class="col-span-full w-crypto">
+            <div class="flex items-center justify-between">
+              <label class="field-label">عنوان الاستقبال (Public Address) *</label>
+              <span id="wAddressBadge" class="badge badge-neutral" style="font-size:.6875rem">بانتظار الإدخال</span>
+            </div>
+            <input id="wAddress" class="input" dir="ltr" placeholder="T… أو 0x… أو bc1…">
+            <p id="wAddressHint" class="font-body-sm text-on-surface-variant mt-space-xs" style="font-size:.75rem"></p>
+          </div>
+
+          <!-- ══ حقول المحفظة المحلية ══ -->
+          <div class="w-local"><label class="field-label">الدولة *</label>
+            <select id="wCountry" class="input"></select></div>
+          <div class="w-local"><label class="field-label">مزوّد المحفظة *</label>
+            <input id="wProvider" class="input" placeholder="شام كاش+ · فودافون كاش · إنستاباي"></div>
+          <div class="w-local"><label class="field-label">رقم المحفظة / الهاتف *</label>
+            <input id="wAccount" class="input" dir="ltr" placeholder="0999 123 456"></div>
+          <div class="w-local"><label class="field-label">اسم صاحب الحساب *</label>
+            <input id="wAccountName" class="input" placeholder="أحمد محمد"></div>
+
+          <!-- ══ مشترك ══ -->
+          <div class="col-span-full"><label class="field-label">تعليمات للمشتري (الفارغ لا يُرسم)</label>
+            <textarea id="wNote" class="input" style="min-height:60px" placeholder="حوّل المبلغ ثم أرسل صورة إشعار التحويل."></textarea></div>
+          <div class="col-span-full"><label class="field-label">شعار / أيقونة المحفظة (اختياري — يظهر للعميل في الدفع)</label>
+            <div class="wallet-drop" id="wLogoDrop">
+              <span class="material-symbols-outlined">add_photo_alternate</span>
+              <span class="font-body-sm">ارفع شعار المحفظة (PNG أو SVG)</span>
+              <input id="wLogoInput" type="file" accept="image/*" hidden>
+            </div>
+            <div class="wallet-preview" id="wLogoPreview"></div>
+          </div>
+          <div class="col-span-full"><label class="field-label">صورة QR (اختياري — وتُولَّد تلقائياً للمحافظ الرقمية)</label>
+            <div class="wallet-drop" id="wQrDrop">
+              <span class="material-symbols-outlined">qr_code_2</span>
+              <span class="font-body-sm">ارفع صورة QR</span>
+              <input id="wQrInput" type="file" accept="image/*" hidden>
+            </div>
+            <div class="wallet-preview" id="wQrPreview"></div>
+            <input id="wQr" class="input mt-space-xs" dir="ltr" placeholder="أو الصق رابط صورة QR مباشرة: https://…">
+          </div>
+          <div><label class="field-label">المعرّف (تلقائي)</label><input id="wEndpoint" class="input" dir="ltr" readonly></div>
+          <div class="flex items-center gap-space-sm"><input id="wIsDefault" type="checkbox" style="width:16px;height:16px;accent-color:var(--color-primary)"><label class="field-label" style="margin:0">افتراضية (تظهر أولاً وتُحدَّد تلقائياً)</label></div>
+          <div class="flex items-center gap-space-sm"><input id="wEnabled" type="checkbox" checked style="width:16px;height:16px;accent-color:var(--color-primary)"><label class="field-label" style="margin:0">مفعّلة (المُطفأة لا تصل للواجهة إطلاقاً)</label></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-size-md" data-close="walletModal">إلغاء وتراجع</button>
+        <button type="button" class="btn btn-primary btn-size-md" id="saveWalletBtn">حفظ وتفعيل في المتجر</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال تحرير/إضافة منتج -->
+  <div class="modal-overlay" id="productModal" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width:720px">
+      <button type="button" class="modal-close" data-close="productModal" aria-label="إغلاق">✕</button>
+      <div class="modal-header"><h3 class="font-headline-md" id="productModalTitle">منتج جديد</h3></div>
+      <div class="modal-body">
+        <!-- منتقي نوع المنتج: كل نوع له حقوله الخاصة (CLI / exe / APK / API / GitHub / موقع / منشور) -->
+        <div id="pKindPicker" class="mb-space-md">
+          <div class="field-label">نوع المنتج — يحدّد الحقول التي ستظهر أدناه</div>
+          <div class="flex flex-wrap gap-space-xs" id="pKindButtons"></div>
+        </div>
+        <!-- شريط الحالة الحيّ: النوع المختار + مجاني/مدفوع + حالة قفل التسليم -->
+        <div id="pStateBar" class="flex flex-wrap items-center gap-space-sm font-body-sm mb-space-md" style="background:var(--color-surface-container-low);border:1px solid var(--color-outline-variant);border-radius:var(--radius-default);padding:var(--space-sm) var(--space-md)"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          <div class="col-span-full" id="pPriceModeRow">
+            <div class="field-label">التسعير — المجاني يعطي تنزيلاً مباشراً، والمدفوع يفعّل الترخيص</div>
+            <div class="flex flex-wrap gap-space-xs">
+              <button type="button" class="btn btn-secondary btn-size-md" data-pricemode="free">مجاني — تنزيل مباشر</button>
+              <button type="button" class="btn btn-secondary btn-size-md" data-pricemode="paid">مدفوع — تفعيل بعد الدفع</button>
+            </div>
+          </div>
+          <div data-pfield="name"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pName">الاسم *</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="name" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pName" class="input"><small class="font-body-sm text-on-surface-variant">مثال: Apex Dashboard — اسم الأداة كما يراه العميل.</small></div>
+          <div data-pfield="slug"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pSlug">المعرّف slug *</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="slug" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pSlug" class="input" placeholder="my-product"><small class="font-body-sm text-on-surface-variant">مثال: apex-dashboard — لاتينية صغيرة وشرطات فقط.</small></div>
+          <div class="col-span-full" data-pfield="short"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pShort">وصف مختصر</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="short" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pShort" class="input"><small class="font-body-sm text-on-surface-variant">مثال: لوحة تحكم مبيعات عربية — سطر دعائي واحد.</small></div>
+          <div class="col-span-full" data-pfield="long"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pLong">وصف طويل</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="long" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><textarea id="pLong" class="input" style="min-height:80px"></textarea><small class="font-body-sm text-on-surface-variant">مثال: كل ما يحتاجه متجرك: تقارير وفواتير…</small></div>
+          <div data-pfield="type"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pType">النوع</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="type" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div>
+            <select id="pType" class="input">
+              <option value="exe">تطبيق (exe)</option><option value="apk">أندرويد (apk)</option><option value="cli">CLI</option>
+              <option value="api">API</option><option value="file">قالب/ملف</option>
+            </select><small class="font-body-sm text-on-surface-variant">مثال: exe لويندوز، api لواجهة برمجية.</small></div>
+          <div data-pfield="platform"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pPlatform">المنصة</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="platform" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pPlatform" class="input"><small class="font-body-sm text-on-surface-variant">مثال: Windows 10+ / Android 12+.</small></div>
+          <div data-pfield="price"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pPrice">السعر (0 = مجاني)</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="price" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pPrice" type="number" min="0" class="input" value="0"><small class="font-body-sm text-on-surface-variant">مثال: 29 — أي سعر فوق 0 يقفل التسليم تلقائياً 🔒.</small></div>
+          <div data-pfield="currency"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pCurrency">العملة</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="currency" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div>
+            <select id="pCurrency" class="input"><option>USD</option><option>EGP</option></select><small class="font-body-sm text-on-surface-variant">مثال: USD دولي، EGP محلي.</small></div>
+          <div data-pfield="version"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pVersion">الإصدار</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="version" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pVersion" class="input" value="1.0.0"><small class="font-body-sm text-on-surface-variant">مثال: 2.1.0 — رقم إصدار الأداة.</small></div>
+          <div data-pfield="status"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pStatus">الحالة</label></div>
+            <select id="pStatus" class="input"><option value="active">فعّال</option><option value="hidden">مخفي</option></select><small class="font-body-sm text-on-surface-variant">مثال: مخفي أثناء التجهيز، فعّال عند النشر.</small></div>
+          <!-- ═══ التسليم الموحّد: نمط واحد يُظهر حقوله فقط ═══
+               كان هنا أربعة حقول متفرّقة (رابط التسليم · صفحة المشروع ·
+               دعوة GitHub · أوامر التثبيت) لا يعرف الأدمن أيّها يُستخدم،
+               ولا يمكن تمثيل منشور أو خدمة أو مفتاح بها. الآن نمط صريح. -->
+          <div class="col-span-full" data-pfield="delivery">
+            <div class="flex items-center justify-between gap-space-xs">
+              <label class="field-label" for="pDeliveryMode">طريقة التسليم 🔒</label>
+              <button type="button" class="btn btn-ghost btn-size-sm" data-eye="delivery" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
+            </div>
+            <select id="pDeliveryMode" class="input mb-space-sm">
+              <option value="file">ملف للتحميل (.exe · .apk · .zip)</option>
+              <option value="repo">مستودع كود (GitHub)</option>
+              <option value="link">منشور · مقال · صفحة</option>
+              <option value="service">خدمة حيّة على الإنترنت</option>
+              <option value="key">مفتاح ترخيص / API</option>
+              <option value="install">أوامر تثبيت (npm · pip · docker)</option>
+            </select>
+
+            <div class="dv-field" data-dv="file repo link service">
+              <label class="field-label" for="pDeliveryUrl">الرابط</label>
+              <input id="pDeliveryUrl" class="input" dir="ltr" placeholder="https://...">
+            </div>
+
+            <div class="dv-field" data-dv="file">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm mt-space-sm">
+                <div><label class="field-label" for="pDeliveryFile">اسم الملف الظاهر</label><input id="pDeliveryFile" class="input" dir="ltr" placeholder="ApexDashboard-Setup-2.1.0.exe"></div>
+                <div><label class="field-label" for="pDeliverySize">الحجم (للعرض)</label><input id="pDeliverySize" class="input" dir="ltr" placeholder="48 MB"></div>
+              </div>
+            </div>
+
+            <div class="dv-field" data-dv="repo">
+              <div class="flex items-center gap-space-sm mt-space-sm mb-space-sm">
+                <input id="pDeliveryPublic" type="checkbox" checked style="width:16px;height:16px;accent-color:var(--color-primary)">
+                <label class="field-label" style="margin:0">مستودع عام — الرابط يكفي</label>
+              </div>
+              <label class="field-label" for="pDeliveryInvite">رابط الدعوة (للمستودع الخاص فقط)</label>
+              <input id="pDeliveryInvite" class="input" dir="ltr" placeholder="https://github.com/حسابك/المستودع">
+            </div>
+
+            <div class="dv-field" data-dv="install">
+              <label class="field-label" for="pDeliveryCommands">الأوامر — سطر لكل أمر</label>
+              <textarea id="pDeliveryCommands" class="input" style="min-height:60px" dir="ltr" placeholder="npm i -g @nova/config-forge"></textarea>
+            </div>
+
+            <div class="mt-space-sm">
+              <label class="field-label" for="pDeliveryNote">تعليمات للمشتري (الفارغ لا يُرسم)</label>
+              <input id="pDeliveryNote" class="input" placeholder="فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت.">
+            </div>
+            <small class="font-body-sm text-on-surface-variant" id="pDeliveryHint"></small>
+          </div>
+          <div class="col-span-full" data-pfield="licenseNote"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pLicenseNote">ملاحظة الترخيص</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="licenseNote" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><input id="pLicenseNote" class="input" placeholder="ترخيص تجاري دائم…"><small class="font-body-sm text-on-surface-variant">مثال: ترخيص دائم لجهازين — نص دعائي يظهر للعميل.</small></div>
+          <div class="col-span-full" data-pfield="images"><div class="flex items-center justify-between gap-space-xs"><label class="field-label">صور المعاينة (صورة أو أكثر)</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="images" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div><div id="pImagesDrop" class="img-drop"><span class="material-symbols-outlined">add_photo_alternate</span><span class="font-body-sm">اسحب الصور هنا أو انقر للاختيار — يمكن اختيار عدة صور</span><input id="pImagesInput" type="file" accept="image/*" multiple hidden></div><div id="pImagesGrid" class="img-grid"></div><small class="font-body-sm text-on-surface-variant">الصورة الأولى تظهر كغلاف المنتج، وكل الصور تظهر في معرض التفاصيل.</small></div>
+          <div class="flex items-center gap-space-sm" data-pfield="featured"><input id="pFeatured" type="checkbox" style="width:16px;height:16px;accent-color:var(--color-primary)"><label class="field-label" style="margin:0" for="pFeatured">مميّز (يُبرز في المعرض)</label><button type="button" class="btn btn-ghost btn-size-sm" data-eye="featured" title="إظهار/إخفاء عن العميل"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button></div>
+          <div class="col-span-full" data-pfield="licenseKeys"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pLicenseKeys">مفاتيح الترخيص 🔒</label></div><textarea id="pLicenseKeys" class="input" style="min-height:60px" dir="ltr"></textarea><small class="font-body-sm text-on-surface-variant">مثال: NVA-XXXX-YYYY — سطر لكل مفتاح؛ لا تظهر قبل التأكيد.</small></div>
+          <div class="col-span-full" data-pfield="demoUrl"><label class="field-label" for="pDemoUrl">رابط معاينة حيّة (اختياري)</label><input id="pDemoUrl" class="input" dir="ltr" placeholder="https://..."><small class="font-body-sm text-on-surface-variant">يظهر كزر «معاينة حية» — منفصل عن التسليم ولا يُقفل.</small></div>
+          <div data-pfield="licenseMode"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pLicenseMode">وضع الترخيص</label></div>
+            <select id="pLicenseMode" class="input"><option value="none">بلا (مجاني)</option><option value="key">مفاتيح ترخيص</option></select><small class="font-body-sm text-on-surface-variant">مثال: مفاتيح ترخيص للمنتج المدفوع.</small></div>
+          <div data-pfield="licenseKeys"><div class="flex items-center justify-between gap-space-xs"><label class="field-label" for="pLicenseKeys">مفاتيح الترخيص 🔒</label></div><textarea id="pLicenseKeys" class="input" style="min-height:60px" dir="ltr"></textarea><small class="font-body-sm text-on-surface-variant">مثال: NVA-XXXX-YYYY — سطر لكل مفتاح؛ لا تظهر قبل التأكيد.</small></div>
+          <div class="col-span-full" data-pfield="payments"><label class="field-label">طرق الدفع</label><p class="font-body-sm text-on-surface-variant" style="margin:0">كل المحافظ المُفعّلة تظهر للمشتري في صفحة الدفع وهو يختار — بلا ربط بمنتج بعينه. تُدار من تبويب <b>«المحافظ»</b>.</p></div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-size-md" data-close="productModal">إلغاء</button>
+        <button type="button" class="btn btn-secondary btn-size-md" id="previewProductBtnFooter"><span class="material-symbols-outlined" style="font-size:16px">preview</span>معاينة كعميل</button>
+        <button type="button" class="btn btn-primary btn-size-md" id="saveProductBtn">حفظ المنتج</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- معاينة الأدمن: نفس نافذة تفاصيل العميل (تُحقن عبر admin.js) -->
+  <div class="modal-overlay" id="adminPreviewModal" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width:680px">
+      <button type="button" class="modal-close" data-close="adminPreviewModal" aria-label="إغلاق">✕</button>
+      <div class="modal-header"><h3 class="font-headline-md">معاينة كعميل 👁‍🗨</h3></div>
+      <div class="modal-body" id="adminPreviewBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-size-md" data-close="adminPreviewModal">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- بطاقة المشاركة: رابط مباشر للمنتج + أزرار وسائل التواصل -->
+  <div class="modal-overlay" id="shareModal" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width:540px">
+      <button type="button" class="modal-close" data-close="shareModal" aria-label="إغلاق">✕</button>
+      <div class="modal-header"><h3 class="font-headline-md">مشاركة المنتج</h3></div>
+      <div class="modal-body" id="shareBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-size-md" data-close="shareModal">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Toast ═══ -->
+  <div id="toast" role="status" aria-live="polite" style="display:flex">
+    <span class="material-symbols-outlined icon" id="toastIcon">info</span>
+    <span class="font-body-md" id="toastMsg"></span>
+  </div>
+
+  <!-- ═══ البيانات المضمّنة (احتياط للعمل بلا خادم) — تُولَّد بـ tools/embed-data.py ═══ -->
+  <script id="nova-data" type="application/json">{"products":{"_comment":"الكتالوج العام — يُنشر علناً. ⚠️ لا تضع هنا أي مفتاح ترخيص أو رابط تسليم سرّي. المفاتيح تعيش في جدول Supabase (products.licenseKeys) وحده، وهي محجوبة عن المفتاح العام بسياسات RLS.","products":[{"id":1,"name":"ConfigForge CLI","slug":"config-forge-cli","short":"أداة سطر أوامر لتوليد وإدارة ملفات الإعداد","long":"يولّد ConfigForge ملفات إعداد (yaml / json / env) من قوالب، يحوّل بين الصيغ، ويدعم متغيّرات سرية آمنة. مثالية للمطورين الذين يديرون بيئات متعددة. يدعم التكامل مع CI/CD.","type":"cli","kind":"cli","platform":"Cross-platform (Windows • macOS • Linux)","price":0,"currency":"USD","version":"2.3.0","features":["توليد إعدادات من القوالب","تحويل yaml ↔ json ↔ env","متغيّرات سرية مشفّرة","تكامل CI/CD"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"install","url":"","inviteUrl":"","isPublic":true,"commands":["npm i -g @nova/config-forge","config-forge init","config-forge apply --env production"],"fileName":"","size":"","note":""}},{"id":2,"name":"Nova UI Kit","slug":"nova-ui-kit","short":"مجموعة مكوّنات واجهة مطوّر احترافية (Figma + Tailwind)","long":"مكتوبة بـ Tailwind CSS ومصممة بدقة، تشمل 48 مكوّناً جاهزاً، نظام لون أساسي، ودعم للوضعين الفاتح والداكن. ملفّات Figma + الكود المصدري.","type":"file","kind":"file","platform":"Figma • Tailwind CSS","price":0,"currency":"USD","version":"1.0.0","features":["48 مكوّناً جاهزاً","Figma + React + Tailwind","دعم الوضع الداكن","قواعد توجيه موحّدة"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"nova-ui-kit-1.0.0.zip","size":"","note":"يشمل ملفات Figma والكود المصدري."}},{"id":3,"name":"Apex Dashboard","slug":"apex-dashboard","short":"لوحة تحكم متكاملة للمشاريع والمهام","long":"منصة متكاملة لإدارة المشاريع والمهام. تدعم الفرق الصغيرة والمتوسطة مع تقارير مفصلة، تحليلات أداء، وتزامن فوري بين الأعضاء.","type":"exe","kind":"exe","platform":"Windows 10+","price":29,"currency":"USD","version":"2.1.0","features":["إدارة مهام متقدّمة","تقارير تفاعلية","تزامن فوري","دعم الفرق حتى 10 أعضاء"],"licenseMode":"key","licenseNote":"ترخيص تجاري دائم مدى الحياة — يشمل تحديثات الإصدارات الكبرى.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"ApexDashboard-Setup-2.1.0.exe","size":"","note":""}},{"id":4,"name":"AuthKit API","slug":"authkit-api","short":"API جاهزة للمصادقة والهوية (JWT + OAuth2)","long":"API Self-hosted جاهزة للمصادقة والهوية. تدعم JWT، OAuth2، SSO، وجدران API. يُشغّل عبر Docker في دقائق.","type":"api","kind":"api","platform":"Docker • Self-hosted","price":19,"currency":"USD","version":"1.2.4","features":["JWT + OAuth2","SSO (Google, GitHub)","حماية JWT مدمجة","توثيق Swagger"],"licenseMode":"key","licenseNote":"ترخيص تجاري — يشمل تحديثات أمان وترخيص لعدد غير محدود من التطبيقات.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"repo","url":"","inviteUrl":"","isPublic":false,"commands":[],"fileName":"","size":"","note":"تُرسَل دعوة الوصول إلى المستودع الخاص بعد تأكيد الدفع."}},{"id":5,"name":"Pulse Monitor","slug":"pulse-monitor","short":"تطبيق أندرويد لمراقبة الخوادم وواجهات API مع إشعارات فورية","long":"يراقب Pulse Monitor حالات الخوادم وزمن الاستجابة وواجهات API، ويرسل إشعارات فورية عند أي انقطاع أو بطء. يتضمن لوحة مباشرة، سجلات قابلة للتصدير، ووضعاً داكناً — بدون أذونات زائدة أو تتبع.","type":"apk","kind":"apk","platform":"Android 8.0+","price":15,"currency":"USD","version":"1.4.2","features":["مراقبة لحظية حتى 20 هدفاً","إشعارات Push فورية","تصدير السجلات CSV","وضع داكن أصيل"],"licenseMode":"key","licenseNote":"ترخيص جهازين لكل مفتاح — تحديثات مجانية لعام كامل.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"PulseMonitor-1.4.2.apk","size":"","note":"فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت."}},{"id":6,"name":"LandingForge","slug":"landing-forge","short":"12 قالب صفحة هبوط جاهزة (HTML + Tailwind) بدعم RTL","long":"حزمة قوالب صفحات هبوط احترافية مبنية بـ HTML وTailwind CSS فقط — بلا اعتماديات أو إطار عمل. تدعم RTL والوضع الداكن، وتشمل صفحات SaaS، منتج رقمي، تطبيق جوال، وملف أعمال. الكود نظيف وقابل للتخصيص في دقائق.","type":"file","kind":"file","platform":"HTML • Tailwind CSS","price":39,"currency":"USD","version":"2.0.1","features":["12 قالباً كاملاً","دعم RTL أصيل","وضع داكن/فاتح","بلا اعتماديات — HTML صافٍ"],"licenseMode":"key","licenseNote":"ترخيص استخدام تجاري لمشاريع غير محدودة — يُمنع إعادة البيع كقوالب.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"landing-forge-2.0.1.zip","size":"","note":""}},{"id":7,"name":"ClipStash","slug":"clipstash","short":"مدير حافظة ذكي لويندوز — حفظ تاريخ النسخ والبحث فيه","long":"أداة سطح مكتب خفيفة تحفظ تاريخ الحافظة (نصوص، روابط، مقتطفات كود) مع بحث فوري واختصارات عامة. تعمل من شريط النظام، تستهلك أقل من 30MB من الذاكرة، وتخزّن البيانات محلياً بالكامل.","type":"exe","kind":"exe","platform":"Windows 10+","price":0,"currency":"USD","version":"1.2.0","features":["تاريخ حافظة حتى 1000 عنصر","بحث فوري","اختصار عام Ctrl+Shift+V","تخزين محلي بالكامل"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"ClipStash-Setup-1.2.0.exe","size":"","note":""}}],"_delivery_comment":"delivery.mode أحد ستة: file · repo · link · service · key · install. الحقل الفارغ لا يُرسم. المدفوع يُقفل تسليمه تلقائياً حتى تأكيد الدفع."},"settings":{"_comment":"إعدادات الموقع — ⚠️ هذا الملف يُنشر علناً. لا تضع فيه أي مفتاح سرّي (githubToken يجب أن يبقى فارغاً). حقول الدفع الفارغة تُخفى تلقائياً من الواجهة حتى تملأها.","platformName":"معرض الأعمال","platformNameEn":"Work Showcase","logoLetter":"ع","logoImage":null,"heroTitle":"منتجات رقمية للمطورين","heroSub":"استكشف أدوات برمجية، واجهات API، قوالب، وتطبيقات جاهزة للإطلاق — بلا سيرفر، ودفع مباشر من محفظة إلى محفظة.","heroBadge":"بلا سيرفر · PWA · محافظ رقمية ومحلية","devName":"أحمد محمد","devTitle":"مهندس برمجيات · مطور أدوات مفتوحة المصدر","contactEmail":"","contactWhatsapp":"","contactGithub":"","contactLinkedin":"","theme":{"default":"dark","allowToggle":true},"_countries_comment":"قائمة الدول المتاحة للمحافظ المحلية — يظهر منها فقط ما له محفظة مُفعّلة. أضف أي دولة هنا ثم أضف محفظة لها من تبويب المحافظ.","countries":{"SY":"سوريا","EG":"مصر","SA":"السعودية","AE":"الإمارات","JO":"الأردن","IQ":"العراق","MA":"المغرب","DZ":"الجزائر","TN":"تونس","LY":"ليبيا","SD":"السودان","YE":"اليمن","PS":"فلسطين","LB":"لبنان","KW":"الكويت","QA":"قطر","BH":"البحرين","OM":"عُمان","TR":"تركيا","OTHER":"دولة أخرى"},"_proof_comment":"مسارات إرسال إثبات الدفع. الفارغ منها لا يُعرض للمشتري.","proof":{"allowUpload":false,"allowWhatsapp":true,"allowEmail":true,"maxImageMb":2,"maxImagePx":1280},"githubToken":"","githubRepo":"","githubBranch":"main","supabaseUrl":"https://qcarxyaxcfgasqkppkjb.supabase.co","supabaseKey":"sb_publishable_3di31UtXQVsvZ14AZjfHpA_4o_0azWQ","adminEmail":"","discounts":[{"code":"WELCOME10","label":"خصم الترحيب 10%","amount":10,"type":"percent","once":true}],"purchasesEndpoint":"","stats":{"productsCount":0,"downloadsCount":0}},"wallets":{"_comment":"المحافظ الموحّدة — نظام واحد بدل نظامين. النوعان: crypto (رقمية) و local (محلية). ⚠️ حقل address/account فارغ يعني «غير مُعدّة» فتُخفى تلقائياً من صفحة الدفع. لا تضع عنواناً تجريبياً: عرض محفظة لا تملكها يعني أن أموال المشتري تُفقد نهائياً. املأها من لوحة الأدمن → تبويب المحافظ.","_fields":{"type":"crypto | local — يحدّد الحقول الظاهرة ونوع الأيقونة","label":"الاسم الظاهر للمشتري","country":"للمحلية فقط: SY · EG · SA … (يظهر كوسم تعريف لا كفلتر)","provider":"للمحلية فقط: شام كاش+ · فودافون كاش …","network":"للرقمية فقط: TRC20 · BEP20 · ERC20 · BTC …","currency":"للعرض فقط: USDT · BTC · SYP · EGP","address":"للرقمية: عنوان الاستقبال العام","account":"للمحلية: رقم المحفظة أو الهاتف","accountName":"للمحلية: اسم صاحب الحساب","qr":"صورة QR مرفوعة (اختياري — وإلا تُولَّد تلقائياً للرقمية)","note":"تعليمات للمشتري — الفارغ لا يُرسم","enabled":"المُطفأة لا تُرسَل للواجهة أصلاً","isDefault":"تظهر أولاً وتُحدَّد تلقائياً"},"wallets":[{"id":"wlt_usdt_trc20","endpointId":"wlt_usdt_trc20","type":"crypto","label":"USDT — Binance","network":"TRC20","currency":"USDT","address":"","qr":"","note":"أرسل على شبكة TRC20 فقط. أي شبكة أخرى تعني فقدان المبلغ نهائياً.","isDefault":true,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_usdt_bep20","endpointId":"wlt_usdt_bep20","type":"crypto","label":"USDT — Trust Wallet","network":"BEP20","currency":"USDT","address":"","qr":"","note":"شبكة BEP20 (BNB Smart Chain) — رسوم منخفضة.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_btc","endpointId":"wlt_btc","type":"crypto","label":"BTC — Trust Wallet","network":"BTC","currency":"BTC","address":"","qr":"","note":"أرسل بـ BTC (Native SegWit) فقط.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_shamcash","endpointId":"wlt_shamcash","type":"local","label":"شام كاش+","country":"SY","provider":"شام كاش+","currency":"SYP","account":"","accountName":"","qr":"","note":"حوّل المبلغ ثم أرسل صورة إشعار التحويل.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_vodafone","endpointId":"wlt_vodafone","type":"local","label":"فودافون كاش","country":"EG","provider":"فودافون كاش","currency":"EGP","account":"","accountName":"","qr":"","note":"","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_instapay","endpointId":"wlt_instapay","type":"local","label":"إنستاباي","country":"EG","provider":"إنستاباي","currency":"EGP","account":"","accountName":"","qr":"","note":"تحويل فوري بين البنوك والمحافظ.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}}]}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <!-- مودال رفض الطلب: سبب إجباري (5 محارف+) — يصل للمشتري في صفحة الطلبات -->
+  <div class="modal-overlay" id="rejectModal" role="dialog" aria-modal="true" aria-labelledby="rejectTitle">
+    <div class="modal-panel" style="max-width:480px">
+      <button type="button" class="modal-close" data-close="rejectModal" aria-label="إغلاق">✕</button>
+      <h2 id="rejectTitle" class="font-headline-md mb-space-sm" style="color:var(--color-error)">رفض الطلب</h2>
+      <p class="font-body-sm text-on-surface-variant mb-space-sm">
+        الطلب <code class="font-code-sm text-primary" dir="ltr" id="rejectRef"></code> —
+        تأكد أنك راجعت إثبات الدفع قبل الرفض. المشتري حوّل مالاً وينتظر رداً.
+      </p>
+      <label class="font-label-sm text-on-surface-variant" for="rejectReasonInput">سبب الرفض <b style="color:var(--color-error)">*</b> — يظهر للمشتري كما تكتبه</label>
+      <textarea id="rejectReasonInput" rows="3" class="input" style="width:100%;margin-top:var(--space-xs);resize:vertical"
+        placeholder="مثال: رقم العملية غير مطابق لأي تحويل واصل إلى المحفظة. أرسل صورة الإشعار الصحيحة أو تواصل معنا."></textarea>
+      <p class="font-body-sm mb-space-md" id="rejectReasonError" style="display:none;color:var(--color-error);margin-top:var(--space-xs)">
+        ⚠️ السبب مطلوب — اكتب 5 محارف على الأقل. الرفض بلا سبب يترك المشتري بلا جواب.
+      </p>
+      <div class="flex items-center justify-end gap-space-sm">
+        <button type="button" class="btn btn-ghost btn-size-md" id="rejectCancelBtn">إلغاء</button>
+        <button type="button" class="btn btn-primary btn-size-md" id="rejectSubmitBtn"
+          style="background:var(--color-error);color:#fff">تأكيد الرفض</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="db.js?v=33" defer></script>
+  <script src="admin.js?v=33" defer></script>
+</body>
+</html>

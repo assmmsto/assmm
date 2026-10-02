@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معرض الحركات — ٦ نماذج احترافية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080c; --surface:#101116; --surface-2:#15161d;
+  --line:#24252e; --txt:#f0f0f5; --dim:#9a9bab; --faint:#63646f;
+  --accent:#f59e0b; --accent-2:#fbbf24; --accent-soft:rgba(245,158,11,.13);
+  --ok:#1fc59c; --err:#f87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+  background:radial-gradient(1000px 600px at 50% -10%, rgba(245,158,11,.07), transparent 62%), var(--bg);
+  color:var(--txt);padding:44px 20px 70px;
+}
+.wrap{max-width:1000px;margin:0 auto}
+header{text-align:center;margin-bottom:40px}
+header h1{font-size:21px;font-weight:600;margin-bottom:8px}
+header p{color:var(--dim);font-size:13px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+
+.card{
+  background:linear-gradient(168deg, var(--surface-2), var(--surface));
+  border:1px solid var(--line);border-radius:20px;padding:26px 22px 22px;
+  box-shadow:0 1px 0 rgba(255,255,255,.045) inset, 0 20px 50px -16px rgba(0,0,0,.7);
+  text-align:center;
+}
+.card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.card .tag{font-size:11px;color:var(--faint);margin-bottom:20px}
+
+.field{
+  position:relative;height:96px;
+  display:flex;align-items:center;justify-content:center;
+  direction:ltr;margin-bottom:6px;
+}
+.box{
+  position:absolute;width:50px;height:58px;border-radius:13px;
+  border:1.5px solid var(--line);
+  background:linear-gradient(170deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Sans',sans-serif;font-size:21px;font-weight:500;color:var(--txt);
+  will-change:transform;box-shadow:0 2px 8px rgba(0,0,0,.28);
+  transition:border-color .2s,box-shadow .2s,color .2s;
+}
+.box.on{
+  border-color:rgba(245,158,11,.34);
+  background:linear-gradient(170deg,var(--accent-soft),rgba(245,158,11,.045));
+  color:var(--accent-2);box-shadow:0 0 0 3.5px rgba(245,158,11,.07),0 4px 14px rgba(245,158,11,.13);
+}
+.field.bad .box{border-color:rgba(248,113,113,.5)}
+.field.bad .box.on{color:var(--err)}
+
+.done{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .28s}
+.field.good .done{opacity:1}
+.done .ring{
+  width:62px;height:62px;border-radius:50%;
+  background:rgba(31,197,156,.13);border:1.5px solid rgba(31,197,156,.42);
+  display:flex;align-items:center;justify-content:center;
+  transform:scale(.55);opacity:0;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+}
+.field.good .done .ring{transform:scale(1);opacity:1}
+.done svg{width:29px;height:29px;stroke:var(--ok);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.done path{stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset .42s cubic-bezier(.65,0,.35,1) .16s}
+.field.good .done path{stroke-dashoffset:0}
+
+.note{font-size:11.5px;color:var(--dim);min-height:30px;line-height:1.6}
+.note.ok{color:var(--ok)} .note.err{color:var(--err)}
+.acts{display:flex;gap:7px;justify-content:center;margin-top:10px}
+button{
+  font-family:inherit;font-size:11.5px;font-weight:500;padding:9px 18px;border-radius:10px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface-2);color:var(--dim);transition:all .18s;
+}
+button:hover:not(:disabled){border-color:rgba(245,158,11,.34);color:var(--txt)}
+button.go{background:linear-gradient(170deg,var(--accent-2),var(--accent));color:#3b2004;border-color:transparent;font-weight:600;box-shadow:0 4px 14px rgba(245,158,11,.22)}
+button:disabled{opacity:.4;cursor:not-allowed}
+
+@media (max-width:420px){ .card{padding:22px 16px 18px} .box{width:43px;height:52px;font-size:18px} }
+@media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>معرض الحركات — ٦ نماذج</h1>
+  <p>اكتب <b style="color:var(--accent)">1234</b> للنجاح · أي رمز آخر للفشل · كل نموذج بحركة مختلفة</p>
+</header>
+<div class="grid" id="grid"></div>
+</div>
+
+<script>
+'use strict';
+const SP=60, R=26, SC=.36, MORPH=.6, SPD=2.3;
+const LEN=4;
+
+const MODELS=[
+  {id:'orbit',   name:'المدار',      tag:'الصناديق تدور حول المركز'},
+  {id:'wave',    name:'الموجة',      tag:'موجة تمرّ بالتتابع'},
+  {id:'fold',    name:'الطي',        tag:'تنطوي نحو المركز'},
+  {id:'bar',     name:'الشريط',      tag:'تندمج في شريط تقدّم'},
+  {id:'pulse',   name:'النبضة',      tag:'تنبض في مكانها'},
+  {id:'flip',    name:'القلب ٣أبعاد', tag:'تدور حول محورها'},
+];
+
+const grid=document.getElementById('grid');
+
+MODELS.forEach(m=>{
+  const card=document.createElement('section');
+  card.className='card';
+  card.innerHTML=
+    '<h3>'+m.name+'</h3>'+
+    '<div class="tag">'+m.tag+'</div>'+
+    '<div class="field" data-model="'+m.id+'"></div>'+
+    '<p class="note">في انتظار الإدخال…</p>'+
+    '<div class="acts"><button class="go" disabled>تحقّق</button><button class="cl">مسح</button></div>';
+  grid.appendChild(card);
+});
+
+function buildField(el){
+  const boxes=[];
+  for(let i=0;i<LEN;i++){
+    const b=document.createElement('div');
+    b.className='box';el.appendChild(b);boxes.push(b);
+  }
+  const inp=document.createElement('input');
+  inp.type='text';inp.maxLength=LEN;inp.autocomplete='one-time-code';inp.inputMode='numeric';
+  Object.assign(inp.style,{position:'absolute',inset:'0',width:'100%',height:'100%',opacity:'0',cursor:'pointer',border:'0',background:'transparent',color:'transparent'});
+  el.appendChild(inp);
+  const done=document.createElement('div');
+  done.className='done';
+  done.innerHTML='<div class="ring"><svg viewBox="0 0 24 24"><path d="M4.5 12.8l4.7 4.7L19.5 7"/></svg></div>';
+  el.appendChild(done);
+
+  const rx=i=>(i-(LEN-1)/2)*SP;
+  const row=()=>boxes.forEach((b,i)=>{
+    b.style.transform='translate('+rx(i)+'px,0) scale(1) rotateY(0deg)';
+    b.style.opacity='1';
+  });
+  const paint=()=>{
+    const v=inp.value;
+    boxes.forEach((b,i)=>{b.textContent=v[i]||'';b.classList.toggle('on',!!v[i]);});
+  };
+  el._f={inp,boxes,len:LEN,model:el.dataset.model,rx,row,paint,raf:null,busy:false};
+  inp.addEventListener('input',()=>{paint();if(inp.value.length===LEN)run(el);});
+  el.addEventListener('click',()=>inp.focus());
+  row();paint();
+}
+
+/* ── الحركات: كل واحدة تحسب transform differently ── */
+function motion(f,model,dt,t){
+  const ang=(2*Math.PI)/f.len;
+  switch(model){
+    case 'orbit':{ // مدار دائري
+      const a=ang*0+ (t>=1?(dt-MORPH)*SPD:0);
+      return f.boxes.map((b,i)=>{
+        const th=ang*i + (t>=1?(dt-MORPH)*SPD:0);
+        return {x:R*Math.cos(th),y:R*Math.sin(th),s:SC};
+      });
+    }
+    case 'wave':{ // موجة: كل صندوق يتأخر عن السابق
+      return f.boxes.map((b,i)=>({
+        x:f.rx(i), y:Math.sin(dt*4.2 - i*0.85)*11, s:.92+Math.sin(dt*4.2-i*0.85)*0.06
+      }));
+    }
+    case 'fold':{ // طي: تنهار نحو المركز + scaleX يتقلص
+      const k=Math.min(1,dt/MORPH);
+      const e=1-Math.pow(1-k,3);
+      return f.boxes.map((b,i)=>({
+        x:f.rx(i)*(1-e*0.93), y:0, s:1-e*0.55, sx:1-e*0.86
+      }));
+    }
+    case 'bar':{ // شريط: تندمج في خط أفقي رقيق
+      const k=Math.min(1,dt/MORPH);
+      const e=1-Math.pow(1-k,3);
+      return f.boxes.map((b,i)=>({
+        x:f.rx(i)*(1-e)*0.12, y:0, s:1-e*0.55, sx:1+e*1.9, sy:1-e*0.78
+      }));
+    }
+    case 'pulse':{ // نبضة: تكبر وتصغر في مكانها
+      return f.boxes.map((b,i)=>{
+        const p=Math.sin(dt*3.1 - i*0.55);
+        return {x:f.rx(i), y:0, s:1+p*0.16};
+      });
+    }
+    case 'flip':{ // قلب ثلاثي الأبعاد
+      return f.boxes.map((b,i)=>{
+        const ry=(dt*220 + i*(360/LEN))%360;
+        const sc=Math.abs(Math.cos(ry*Math.PI/180));
+        return {x:f.rx(i), y:0, s:.9+sc*.1, ry:ry};
+      });
+    }
+  }
+  return f.boxes.map((b,i)=>({x:f.rx(i),y:0,s:1}));
+}
+
+function anim(el,target){
+  const f=el._f;
+  if(f.raf)cancelAnimationFrame(f.raf);
+  const t0=performance.now();
+  const from=f.boxes.map((b,i)=>({x:f.rx(i),y:0,s:1}));
+  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+  (function frame(now){
+    const dt=(now-t0)/1000;
+    let t=1;
+    if(target==='wait') t=Math.min(1,ease(dt/MORPH));
+    else if(target==='good') t=Math.max(0,1-ease(dt/.5));
+    else if(target==='bad') t=Math.max(0,1-ease(dt/.45));
+
+    if(target==='wait'){
+      const m=motion(f,f.model,dt,t);
+      f.boxes.forEach((b,i)=>{
+        const p=m[i];
+        const x=from[i].x+(p.x-from[i].x)*t;
+        const y=from[i].y+(p.y-from[i].y)*t;
+        const s=from[i].s+((p.s!==undefined?p.s:1)-from[i].s)*t;
+        const sx=p.sx!==undefined?(1+(p.sx-1)*t):1;
+        const sy=p.sy!==undefined?(1+(p.sy-1)*t):1;
+        const ry=p.ry!==undefined?p.ry:0;
+        b.style.transform='translate('+x+'px,'+y+'px) scale('+s+') scaleX('+sx+') scaleY('+sy+') rotateY('+ry+'deg)';
+        b.style.opacity='1';
+      });
+    }else{
+      // النجاح/الفشل: انهيار للمركز أو عودة للصف
+      f.boxes.forEach((b,i)=>{
+        const x=from[i].x*t, y=0;
+        const s=target==='good'?Math.max(0,t):(1+(0-1)*(1-t));
+        b.style.transform='translate('+x+'px,0) scale('+(target==='good'?t:1)+') rotateY(0deg)';
+        b.style.opacity=target==='good'?String(Math.max(0,t)):'1';
+        if(target!=='good'){b.style.transform='translate('+from[i].x+'px,0) scale(1)';}
+      });
+    }
+
+    if(target==='wait'){f.raf=requestAnimationFrame(frame);return;}
+    if(dt<.55){f.raf=requestAnimationFrame(frame);return;}
+    f.raf=null;
+    if(target==='good')return;
+    f.row();
+    if(target==='bad'){
+      f.boxes.forEach((b,i)=>{
+        b.animate([
+          {transform:'translate('+f.rx(i)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)-8)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)+7)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)-4)+'px,0) scale(1)'},
+          {transform:'translate('+f.rx(i)+'px,0) scale(1)'}
+        ],{duration:450,easing:'cubic-bezier(.36,.07,.19,.97)'});
+      });
+    }
+  })(t0);
+}
+
+async function run(el){
+  const f=el._f;
+  if(f.busy||!f.inp.value.trim())return;
+  f.busy=true;
+  el.classList.remove('good','bad');
+  const card=el.parentElement;
+  const note=card.querySelector('.note');
+  note.className='note';note.textContent='جاري التحقق…';
+  anim(el,'wait');
+
+  await new Promise(r=>setTimeout(r,1700));
+  const ok=f.inp.value==='1234';
+
+  if(f.raf)cancelAnimationFrame(f.raf);
+  if(ok){
+    el.classList.add('good');anim(el,'good');
+    note.className='note ok';note.textContent='تم التحقق بنجاح';
+    card.querySelector('.acts').style.display='none';
+  }else{
+    el.classList.add('bad');anim(el,'bad');
+    note.className='note err';note.textContent='رمز غير صحيح';
+    setTimeout(()=>{el.classList.remove('bad');f.inp.value='';f.paint();f.busy=false;
+      note.className='note';note.textContent='في انتظار الإدخال…';},1500);
+  }
+}
+
+document.querySelectorAll('.field').forEach(buildField);
+document.querySelectorAll('.card').forEach(card=>{
+  const field=card.querySelector('.field');
+  const go=card.querySelector('.go'), cl=card.querySelector('.cl');
+  field._f.inp.addEventListener('input',()=>{go.disabled=field._f.inp.value.length<LEN;});
+  go.addEventListener('click',()=>run(field));
+  cl.addEventListener('click',()=>{
+    const f=field._f;
+    if(f.raf)cancelAnimationFrame(f.raf);
+    field.classList.remove('good','bad');
+    f.busy=false;f.inp.value='';f.paint();f.row();
+    card.querySelector('.acts').style.display='flex';
+    go.disabled=true;
+    const n=card.querySelector('.note');n.className='note';n.textContent='في انتظار الإدخال…';
+  });
+});
+</script>
+</body>
+</html>

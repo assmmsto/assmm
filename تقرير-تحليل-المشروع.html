@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير تحليل المشروع — معرض الأعمال (Nova)</title>
+<style>
+  :root{
+    --amber:#d97706; --amber-soft:#fef3c7; --amber-line:#fcd34d;
+    --ink:#16181d; --ink-2:#3d424c; --ink-3:#6b7280;
+    --bg:#f7f7f5; --card:#ffffff; --line:#e5e5e1;
+    --red:#b91c1c; --red-bg:#fef2f2; --red-line:#fecaca;
+    --org:#c2410c; --org-bg:#fff7ed; --org-line:#fed7aa;
+    --yel:#a16207; --yel-bg:#fefce8; --yel-line:#fef08a;
+    --grn:#15803d; --grn-bg:#f0fdf4; --grn-line:#bbf7d0;
+    --mono:"JetBrains Mono","Cascadia Mono",Consolas,monospace;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:Cairo,"Segoe UI",Tahoma,system-ui,sans-serif;
+    font-size:16px; line-height:1.85;
+  }
+  .wrap{max-width:960px;margin-inline:auto;padding:32px 20px 80px}
+
+  /* ── Header ── */
+  header.hero{
+    background:linear-gradient(150deg,#1a1c22 0%,#22252d 55%,#2b2118 100%);
+    color:#fff;border-radius:20px;padding:40px 34px;position:relative;overflow:hidden;
+    margin-bottom:30px;
+  }
+  header.hero::after{
+    content:"";position:absolute;top:-120px;inset-inline-start:50%;transform:translateX(-50%);
+    width:620px;height:280px;background:rgba(245,158,11,.16);filter:blur(110px);border-radius:9999px;
+  }
+  header.hero .rel{position:relative}
+  .eyebrow{
+    display:inline-block;background:rgba(245,158,11,.16);color:#fbbf24;
+    border:1px solid rgba(245,158,11,.35);border-radius:999px;
+    padding:5px 14px;font-size:13px;font-weight:600;letter-spacing:.2px;
+  }
+  header.hero h1{margin:16px 0 10px;font-size:2rem;line-height:1.35;font-weight:700}
+  header.hero p.lead{margin:0;color:#c9ccd4;font-size:1.02rem;max-width:70ch}
+  .meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .meta span{
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;padding:5px 13px;font-size:12.5px;color:#dfe2e8
+  }
+
+  /* ── Verdict ── */
+  .verdict{
+    background:var(--red-bg);border:1px solid var(--red-line);
+    border-inline-start:5px solid var(--red);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:34px;
+  }
+  .verdict h2{margin:0 0 8px;font-size:1.18rem;color:var(--red)}
+  .verdict p{margin:0;color:#4a2a2a;font-size:.98rem}
+
+  /* ── Stats ── */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:36px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .stat b{display:block;font-size:1.7rem;font-weight:700;color:var(--amber);line-height:1.2}
+  .stat small{color:var(--ink-3);font-size:12.5px}
+
+  /* ── Sections ── */
+  h2.sec{
+    font-size:1.42rem;margin:44px 0 6px;padding-bottom:10px;
+    border-bottom:2px solid var(--line);display:flex;align-items:center;gap:10px
+  }
+  h2.sec .n{
+    background:var(--ink);color:#fff;width:30px;height:30px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0
+  }
+  .sec-sub{color:var(--ink-3);font-size:.93rem;margin:0 0 20px}
+
+  /* ── Issue cards ── */
+  .issue{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:0;margin-bottom:18px;overflow:hidden
+  }
+  .issue .head{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+  .issue .head .badge{
+    flex-shrink:0;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+    letter-spacing:.3px;white-space:nowrap;margin-top:3px
+  }
+  .issue .head h3{margin:0;font-size:1.06rem;line-height:1.5}
+  .issue .head .loc{display:block;font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:5px;direction:ltr;text-align:left}
+  .issue .body{padding:16px 22px 20px}
+  .issue .body p{margin:0 0 12px}
+  .issue .body p:last-child{margin-bottom:0}
+  .issue .body strong{color:var(--ink)}
+  .issue .body ul{margin:0 0 12px;padding-inline-start:22px}
+  .issue .body li{margin-bottom:6px}
+
+  .c-crit .badge{background:var(--red-bg);color:var(--red);border:1px solid var(--red-line)}
+  .c-high .badge{background:var(--org-bg);color:var(--org);border:1px solid var(--org-line)}
+  .c-med  .badge{background:var(--yel-bg);color:var(--yel);border:1px solid var(--yel-line)}
+  .c-good .badge{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-line)}
+  .c-crit{border-inline-start:4px solid var(--red)}
+  .c-high{border-inline-start:4px solid var(--org)}
+  .c-med{border-inline-start:4px solid var(--yel-line)}
+  .c-good{border-inline-start:4px solid var(--grn)}
+
+  /* ── Evidence block ── */
+  .ev{
+    background:#1b1d23;color:#e8eaef;border-radius:10px;padding:14px 16px;margin:12px 0;
+    font-family:var(--mono);font-size:12.6px;line-height:1.75;overflow-x:auto;direction:ltr;text-align:left
+  }
+  .ev .ok{color:#6ee7a8}
+  .ev .bad{color:#fca5a5}
+  .ev .dim{color:#8b93a1}
+  .ev .cmt{color:#7dd3fc}
+
+  code.inl{
+    background:#f1f1ee;border:1px solid var(--line);border-radius:6px;
+    padding:1px 6px;font-family:var(--mono);font-size:12.6px;direction:ltr;
+    display:inline-block;unicode-bidi:embed
+  }
+
+  /* ── Fix box ── */
+  .fix{
+    background:var(--grn-bg);border:1px solid var(--grn-line);border-radius:10px;
+    padding:14px 18px;margin-top:14px
+  }
+  .fix .t{font-weight:700;color:var(--grn);font-size:.93rem;margin-bottom:7px;display:block}
+  .fix p{margin:0 0 8px;font-size:.95rem}
+  .fix p:last-child{margin-bottom:0}
+  .fix ol,.fix ul{margin:0;padding-inline-start:22px;font-size:.95rem}
+  .fix li{margin-bottom:5px}
+
+  /* ── Plan ── */
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+  .phase .ph{
+    padding:14px 20px;background:#faf9f7;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap
+  }
+  .phase .ph h3{margin:0;font-size:1.02rem}
+  .phase .ph .time{font-size:12.5px;color:var(--ink-3);font-family:var(--mono)}
+  .phase ol{margin:0;padding:16px 40px 18px 20px}
+  .phase ol{padding-inline-start:44px}
+  .phase li{margin-bottom:9px;font-size:.96rem}
+  .phase li:last-child{margin-bottom:0}
+  .phase li code{background:#f1f1ee;border-radius:5px;padding:1px 5px;font-family:var(--mono);font-size:12.3px;direction:ltr;display:inline-block}
+
+  /* ── Table ── */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-size:.93rem;margin:14px 0}
+  th,td{padding:11px 14px;text-align:start;border-bottom:1px solid var(--line)}
+  th{background:#faf9f7;font-weight:700;font-size:.88rem;color:var(--ink-2)}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--mono);direction:ltr;text-align:left}
+
+  /* ── Callout ── */
+  .note{
+    background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--radius);
+    padding:16px 20px;margin:20px 0
+  }
+  .note strong{color:#92400e}
+  .note p{margin:0 0 8px}
+  .note p:last-child{margin-bottom:0}
+
+  footer.rep{
+    margin-top:52px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--ink-3);font-size:13px;text-align:center
+  }
+
+  @media(max-width:640px){
+    header.hero{padding:28px 20px}
+    header.hero h1{font-size:1.5rem}
+    .wrap{padding:20px 14px 60px}
+    .issue .head{flex-direction:column;gap:8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="rel">
+    <span class="eyebrow">تقرير تحليل فني — معرض الأعمال (Nova)</span>
+    <h1>تحليل المشروع: المشاكل الحقيقية وخطة النشر المجاني</h1>
+    <p class="lead">
+      فحصتُ المشروع سطراً بسطر، وشغّلتُ فحوصاته الـ189، واختبرتُ قاعدته الحيّة فعلياً بطلبات حقيقية.
+      النتيجة: المشروع <strong>مبني بجودة عالية جداً</strong> — لكنه غير قابل للنشر الآن بسبب ثلاثة مانعات
+      مؤكدة بالتجربة، أحدها يوقف البيع نفسه.
+    </p>
+    <div class="meta">
+      <span>27 ملفاً · 383 كيلوبايت</span>
+      <span>7 منتجات · 3 محافظ</span>
+      <span>189 فحصاً — كلها خضراء</span>
+      <span>14 مشكلة مكتشفة</span>
+      <span>25 سبتمبر 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="verdict">
+  <h2>الحكم المختصر</h2>
+  <p>
+    <strong>لا تنشر بعد.</strong> المشروع جاهز تقنياً بنسبة 90% — البناء والاختبارات والتصميم ولوحة الأدمن كلها
+    متينة. لكن هناك <strong>3 مانعات</strong>: طلبات جديدة تُفقد صامتة (لا يراها الأدمن أبداً)، و19 مفتاح ترخيص
+    مكشوفة للعموم، ولوحة الأدمن مفتوحة لأي زائر. الثلاثة إصلاحها <strong>بسيط ولا يستغرق ساعة</strong> —
+    ولا تحتاج أي إعادة بناء.
+  </p>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>3</b><small>مانعات نشر مؤكدة</small></div>
+  <div class="stat"><b>19</b><small>مفتاح ترخيص مكشوف</small></div>
+  <div class="stat"><b>7/7</b><small>منتجات بلا رابط تسليم</small></div>
+  <div class="stat"><b>0</b><small>طلب يصل للأدمن حالياً</small></div>
+</div>
+
+<h2 class="sec"><span class="n">١</span> المانعات الثلاثة — أوقف كل شيء حتى تُصلح</h2>
+<p class="sec-sub">كل واحدة منها مُثبتة بتجربة عملية على القاعدة الحيّة، لا بالتخمين.</p>
+
+<!-- ══════════ ISSUE 1 ══════════ -->
+<div class="issue c-crit">
+  <div class="head">
+    <span class="badge">مانع · حرج</span>
+    <h3>
+      الطلبات الجديدة تُفقد صامتة — الأدمن لا يرى أي طلب جديد
+      <span class="loc">db.js:123 · app.js:919 · جدول orders</span>
+    </h3>
+  </div>
+  <div class="body">
+    <p>
+      طبقة البيانات <code class="inl">ORDER_COLS</code> تتضمّن عموداً اسمه <code class="inl">payerEmail</code>،
+      و<code class="inl">app.js</code> يضعه في كل طلب — <strong>حتى إن كان فارغاً</strong> (نص فارغ لا يعني «غائب»).
+      لكن هذا العمود <strong>غير موجود أصلاً</strong> في جدول <code class="inl">orders</code>.
+    </p>
+    <p>
+      وPostgREST يرفض الإدراج <em>بالكامل</em> لو وُجد حقل واحد غير معروف. النتيجة:
+      الطلب يُحفظ في متصفح المشتري فقط، والمشتري يرى «تم إرسال طلبك» — بينما الأدمن
+      <strong>لا يرى شيئاً على الإطلاق</strong>. المشتري يدفع، والأدمن لا يعلم.
+    </p>
+    <div class="ev">
+<span class="dim">$</span> POST /rest/v1/orders   <span class="cmt">{... , "payerEmail": ""}</span>
+<span class="bad">→ 400 PGRST204</span> Could not find the 'payerEmail' column of 'orders' in the schema cache
+
+<span class="dim">$</span> POST /rest/v1/orders   <span class="cmt">(نفس الطلب بدون payerEmail)</span>
+<span class="ok">→ 201</span> {"id":64,"reference":"DIAG-8D14B2", ...}   <span class="cmt">← نجح ونُظِّف أثره</span>
+
+<span class="dim">$</span> GET /rest/v1/orders?select=payerEmail
+<span class="bad">→ 400 42703</span> column orders.payerEmail does not exist
+    </div>
+    <p>
+      <strong>لماذا لم يكتشفه أحد؟</strong> لأن الكود «يسقط بأمان» إلى التخزين المحلي — لا رسالة خطأ
+      للمشتري ولا للأدمن. الطلب الحقيقي الوحيد في القاعدة
+      (<code class="inl">REF-MUD7EDEA</code>) أُنشئ قبل إضافة هذا الحقل، لذلك بدا كل شيء سليماً.
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح — اختر واحداً</span>
+      <p><strong>الأفضل (يضيف العمود ويحلّ المشكلة رقم 2 معه):</strong> شغّل ملف
+        <code class="inl">supabase-security-fix.sql</code> في Supabase → SQL Editor.
+        السطر 37 فيه <code class="inl">alter table orders add column if not exists "payerEmail" text;</code></p>
+      <p><strong>الأسرع (إن أردت النشر فوراً بلا قاعدة بيانات):</strong> احذف
+        <code class="inl">'payerEmail'</code> من مصفوفة <code class="inl">ORDER_COLS</code> في
+        <code class="inl">db.js</code> (السطر 125). الطلبات ستصل، لكنك لن ترى بريد المشتري.</p>
+      <p>⚠️ أي تعديل على <code class="inl">db.js</code> يستلزم رفع رقم الإصدار إلى
+        <code class="inl">v17</code> في <code class="inl">index.html</code> و<code class="inl">admin.html</code>
+        و<code class="inl">sw.js</code> والصفحات القانونية الثلاث معاً.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ISSUE 2 ══════════ -->
+<div class="issue c-crit">
+  <div class="head">
+    <span class="badge">مانع · حرج</span>
+    <h3>
+      19 مفتاح ترخيص مكشوفة — ولا تحتاج أي اختراق لقراءتها
+      <span class="loc">data/products.json (منشور علناً) · سياسات RLS في Supabase</span>
+    </h3>
+  </div>
+  <div class="body">
+    <p>
+      المشكلة أوسع مما هو موثّق في ملاحظاتك. يوجد <strong>مساران</strong> للتسريب، وأحدهما لا علاقة له بـ Supabase:
+    </p>
+    <ul>
+      <li><strong>المسار الأول — الملف نفسه:</strong> <code class="inl">data/products.json</code> يُنشر علناً
+        على الموقع، وهو يحتوي <code class="inl">licenseKeys</code> و<code class="inl">usedKeys</code> بالنص
+        الصريح. أي زائر يفتح <code class="inl">/data/products.json</code> يرى كل المفاتيح — حتى لو أغلقت
+        Supabase تماماً.</li>
+      <li><strong>المسار الثاني — القاعدة:</strong> سياسة RLS المفتوحة
+        (<code class="inl">using(true)</code>) تسمح بقراءة الأعمدة السرّية مباشرة عبر المفتاح العام.</li>
+    </ul>
+    <div class="ev">
+<span class="dim">$</span> GET /rest/v1/products?select=name,licenseKeys,usedKeys
+<span class="bad">→ 200</span>  <span class="cmt">19 مفتاحاً مقروءاً بالمفتاح العام</span>
+
+  Apex Dashboard  ["NVA-APEX-1A2B","NVA-APEX-3C4D","NVA-APEX-5E6F",
+                   "NVA-APEX-7G8H","NVA-APEX-9I0O","NVA-APEX-Q1W2","NVA-APEX-E3R4"]
+  AuthKit API     ["NVA-AUTH-A1B2", ... 5 مفاتيح]
+  Pulse Monitor   ["NVA-PLS-2K4M", ... 4 مفاتيح]
+  LandingForge    ["NVA-LND-4H7K", ... 3 مفاتيح]
+  <span class="dim">... والمجموع 19 مفتاحاً</span>
+    </div>
+    <p>
+      عملياً: أي زائر يستطيع أيضاً <strong>قراءة كل الطلبات</strong> (أسماء المشترين وإثباتات الدفع)، وقراءة
+      الاقتراحات، وتعديل سعر أي منتج، وحذف أي منتج. هذا ليس احتمالاً — كل هذه الهجمات نُفِّذت بنجاح سابقاً
+      وموثّقة في مشروعك.
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح — خطوتان</span>
+      <ol>
+        <li>شغّل <code class="inl">supabase-security-fix.sql</code> في Supabase → SQL Editor
+          (يوجد تحقّق مدمج في نهايته يطبع «✅ نجح»).</li>
+        <li><strong>احذف <code class="inl">licenseKeys</code> و<code class="inl">usedKeys</code> من
+          <code class="inl">data/products.json</code></strong> — واحتفظ بالمفاتيح في جدول Supabase وحده.
+          هذا هو الجزء الذي فاته الإصلاح السابق تماماً.</li>
+      </ol>
+      <p>⚠️ <strong>بعد تشغيل السطرين أعلاه، مفاتيحك الـ19 تُعتبر محروقة</strong> — لأنها كانت مكشوفة.
+        أنشئ مجموعة جديدة بعد الإصلاح، أو اعتمد على أن لكل مشترٍ مفتاحه الخاص.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ISSUE 3 ══════════ -->
+<div class="issue c-crit">
+  <div class="head">
+    <span class="badge">مانع · حرج</span>
+    <h3>
+      لوحة الأدمن مفتوحة لأي زائر — ورابطها منشور في الصفحة الرئيسية
+      <span class="loc">index.html:206 · admin.js:187-205</span>
+    </h3>
+  </div>
+  <div class="body">
+    <p>
+      البوابة الحالية ليست مصادقة، بل <strong>شاشة أول تشغيل</strong>:
+      إن لم توجد كلمة مرور محفوظة محلياً، يكتب الزائر واحدة <em>هو</em> وتُحفظ في متصفحه ثم يدخل.
+      لا يوجد أي تحقّق من الخادم.
+    </p>
+    <div class="ev">
+<span class="cmt">// admin.js — منطق البوابة كما هو</span>
+const storedHash = readLocal('nova_admin_hash', null);
+if (storedHash === null) {          <span class="bad">// ← أول زائر: ينشئ كلمة المرور بنفسه</span>
+  writeLocal('nova_admin_hash', hash);
+  enterAdmin();                     <span class="bad">// ← ويدخل</span>
+}
+    </div>
+    <p>
+      ومع RLS المفتوحة، هذا يعني: أي شخص يفتح <code class="inl">/admin.html</code> يصبح «أدمن» فعلياً —
+      يعدّل الأسعار، يخفي المنتجات، يقرأ الطلبات، ويحذف كل شيء. والرابط موجود حرفياً في فوتر الصفحة
+      الرئيسية باسم «لوحة الأدمن»، فيجده أي زائر بنقرة.
+    </p>
+    <p>
+      <code class="inl">noindex</code> و<code class="inl">X-Robots-Tag</code> موجودان فعلاً — لكنهما يمنعان
+      محركات البحث فقط، لا البشر.
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح — فوراً وبلا تعقيد</span>
+      <ol>
+        <li><strong>احذف رابط «لوحة الأدمن» من فوتر <code class="inl">index.html</code></strong> (السطر 206).
+          لا يوجد سبب وجيه لعرضه للزوار — احفظ الرابط في مفضّلتك.</li>
+        <li>شغّل SQL الأمان (يمنع الكتابة بالمفتاح العام، فتصبح اللوحة للعرض فقط إن دخلها أحد).</li>
+        <li>لاحقاً (خلال الأسبوع): استبدل البوابة المحلية بـ <strong>Supabase Auth</strong> —
+          بريد وكلمة مرور لحسابك وحدك، ويصير التحقّق على الخادم لا في المتصفح. هذا هو الحل الصحيح الوحيد.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec"><span class="n">٢</span> مشاكل عالية الأولوية — تمنع البيع الفعلي</h2>
+<p class="sec-sub">لا تُسقط الموقع، لكنها تعني أن المتجر لا يستطيع تسليم أي منتج فعلياً.</p>
+
+<div class="issue c-high">
+  <div class="head">
+    <span class="badge">عالية</span>
+    <h3>لا يوجد أي منتج قابل للتسليم — السبعة كلها بلا رابط تحميل
+      <span class="loc">data/products.json — لا يوجد مفتاح downloadUrl ولا repo في أي منتج</span></h3>
+  </div>
+  <div class="body">
+    <p>
+      الدالة <code class="inl">deliveryUrl()</code> تعيد نصاً فارغاً لكل منتج، فالنتيجة:
+      المجاني يعطي «رابط التحميل غير متوفر لهذا المنتج بعد»، والمدفوع لا يُسلَّم شيئاً عند التأكيد.
+      ميزة روابط التسليم مبنية بشكل ممتاز — لكنها فارغة.
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>من لوحة الأدمن → تبويب المنتجات، املأ رابط التسليم لكل منتج. يوجد تنبيه جاهز
+        (<code class="inl">#deliveryAlert</code>) يسرد كل منتج فعّال بلا رابط صالح — استخدمه كقائمة عمل.
+        يدعم السكربت متغيّرات مثل <code class="inl">{slug}</code> و<code class="inl">{version}</code> و<code class="inl">{file}</code>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-high">
+  <div class="head">
+    <span class="badge">عالية</span>
+    <h3>بيانات دفع وهمية — أخطرها عناوين محافظ لا تملكها
+      <span class="loc">data/settings.json · data/wallets.json</span></h3>
+  </div>
+  <div class="body">
+    <p>كل وسائل الدفع في المشروع تجريبية. وهذا ليس «تفصيلاً شكلياً» — بعضها يعني <strong>فقدان أموال المشتري</strong>:</p>
+    <table>
+      <thead><tr><th>الحقل</th><th>القيمة الحالية</th><th>الخطر</th></tr></thead>
+      <tbody>
+        <tr><td>محفظة USDT (TRC20)</td><td class="num">TF175bg6Vwzp4x1xUa9J7Hpx82qBvU9KzP</td><td>عنوان تجريبي — الأموال المرسلة تُفقد نهائياً</td></tr>
+        <tr><td>محفظة BTC</td><td class="num">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</td><td>هذا هو عنوان المثال الشهير من مواصفة BIP-173 — لا يملكه أحد</td></tr>
+        <tr><td>حوالة بنكية</td><td class="num">EG63 0002 0000 1234 5678 9012 3456 7</td><td>IBAN تجريبي · اسم البنك والبلد غير متوافقين</td></tr>
+        <tr><td>PayPal</td><td class="num">paypal.me/WorkShowcase/29USD</td><td>حساب غير موجود + سعر ثابت 29$ لأي منتج</td></tr>
+        <tr><td>Stripe</td><td class="num">price_1R2NovaStripeDemo</td><td>معرّف تجريبي — الدفع سيفشل دائماً</td></tr>
+      </tbody>
+    </table>
+    <div class="fix">
+      <span class="t">✓ الإصلاح — الأبسط والأكثر أماناً</span>
+      <p>احذف كل وسيلة دفع لا تستطيع تفعيلها فعلياً <strong>الآن</strong>. اترك واحدة أو اثنتين حقيقيتين
+        (محفظة USDT تملكها فعلاً، أو PayPal شخصي). المتجر بوسيلة دفع واحدة يعمل — أما وسيلة دفع معطوبة
+        فتخسر المشتري بعد أن يكون قد قرّر الشراء.</p>
+      <p>ملاحظة مهمة: الميزة موجودة في لوحة الأدمن — يمكنك تعطيل أي محفظة من <code class="inl">enabled: false</code>
+        أو حذفها من تبويب المحافظ، بلا لمس الكود.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-high">
+  <div class="head">
+    <span class="badge">عالية</span>
+    <h3>الصفحة القانونية تصرّح بأشياء غير صحيحة حالياً
+      <span class="loc">privacy.html §4 و§7 · terms.html §10</span></h3>
+  </div>
+  <div class="body">
+    <p>
+      هذه ليست مشكلة تجميلية — الصفحة منشورة باسمك وتحمل تصريحات تخالف الواقع:
+    </p>
+    <ul>
+      <li>§4: «الوصول إلى بيانات المشترين محصور في مالك المتجر» —
+        <strong>غير صحيح</strong>: أي زائر يقرأ جدول الطلبات كاملاً الآن.</li>
+      <li>§7: «قاعدة البيانات محمية بصلاحيات تُقيّد الكتابة على الجداول الحساسة» —
+        <strong>غير صحيح</strong>: لا يوجد أي تقييد.</li>
+      <li>§3: «سجل طلباتك لا يُرسل إلينا» — <strong>مضلِّل</strong>: نفس بيانات الطلب تُرسل إلى Supabase.</li>
+      <li>بيانات التواصل <code class="inl">contact@workshowcase.dev</code> — نطاق لا تملكه.</li>
+    </ul>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>نفّذ إصلاح SQL أولاً — فيصير §4 و§7 <strong>صحيحين تلقائياً بلا تعديل حرف</strong>.
+        ثم صحّح §3 (قل إن الطلب يُرسل لمزوّد قاعدة بيانات)، واستبدل البريد ببريدك الحقيقي.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-high">
+  <div class="head">
+    <span class="badge">عالية</span>
+    <h3>أرقام وادّعاءات غير حقيقية في الصفحة الرئيسية
+      <span class="loc">index.html:81 و125-166 · data/products.json — downloads</span></h3>
+  </div>
+  <div class="body">
+    <ul>
+      <li><code class="inl">50+ مطوّر موثوق</code> — رقم ثابت مكتوب في HTML.</li>
+      <li><code class="inl">downloads: 1240 / 870 / 1250 / 3420 / 980 / 1560 / 2130</code> —
+        تُعرض كإحصاء حقيقي وهي مُختلقة. مشترٍ واحد قد يلاحظ.</li>
+      <li>قسم «بنية المنصة» يدّعي <code class="inl">99.99% GitHub CI/CD</code>،
+        <code class="inl">10ms response</code>، <code class="inl">TLS 1.3 / E2EE</code>،
+        و«تشفير طرفي لمفاتيح الترخيص» — <strong>لا يوجد أي E2EE في المشروع</strong>،
+        والتسليم روابط عادية.</li>
+      <li>القسم نفسه يقول «بلا قاعدة بيانات» بينما Supabase مُفعّلة وتعمل.</li>
+      <li>شارة الهيرو تقول «GitHub Pages» في <code class="inl">settings.json</code> بينما منصة النشر Cloudflare.</li>
+    </ul>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>للإطلاق الصادق: صفّر أرقام التحميلات، واحذف بطاقة «50+ مطوّر»، وبدّل الادّعاءات الثلاثة
+        بشيء صحيح — مثل «ملفات ثابتة · بلا سيرفر»، «PWA يعمل بلا إنترنت»، «دفع بالعملات الرقمية».
+        الصدق هنا ميزة بيع لا عيب.</p>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec"><span class="n">٣</span> مشاكل متوسطة — أصلحها في أول أسبوع</h2>
+
+<div class="issue c-med">
+  <div class="head">
+    <span class="badge">متوسطة</span>
+    <h3>فخّ النشر: مجلد dist/ مستثنى من Git
+      <span class="loc">.gitignore:7 · DEPLOY-CLOUDFLARE.md §3</span></h3>
+  </div>
+  <div class="body">
+    <p>
+      إن ربطت مستودع GitHub بـ Cloudflare Pages (النشر التلقائي)، فلن يجد <code class="inl">dist/</code>
+      لأنه غير مُتتبَّع — إما يفشل البناء، أو يُرفع المشروع كاملاً بما فيه
+      <code class="inl">tests/</code> و<code class="inl">tools/</code> و<code class="inl">.workbuddy-ai/</code>
+      (وهذا الأسوأ: <strong>لا رجعة فيه</strong> بسبب ذاكرة أصول Cloudflare).
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>انشر بالسحب والإفلات لمجلد <code class="inl">dist/</code> (الأسهل والأأمن — وهذا ما يوصي به دليلك).
+        إن أردت النشر التلقائي: في إعدادات Cloudflare اضبط Build command على
+        <code class="inl">python tools/build-dist.py</code> و Build output directory على <code class="inl">dist</code>.
+        لا تفعل الاثنين معاً بلا سبب.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-med">
+  <div class="head">
+    <span class="badge">متوسطة</span>
+    <h3>ثغرة متبقية في إصلاح الأمان الجاهز — الطلبات تبقى مقروءة للجميع
+      <span class="loc">supabase-security-fix.sql:145-149</span></h3>
+  </div>
+  <div class="body">
+    <p>
+      لاحظتُ في ملف الإصلاح أن سياسة قراءة الطلبات هي <code class="inl">using (true)</code>،
+      مع تعليق يقول إن المرجع «صار غير قابل للتخمين». لكن <code class="inl">using(true)</code> تعني
+      <strong>كل الصفوف</strong> — والمرجع غير القابل للتخمين لا يحميك إن كنت تستطيع سرد الجدول كله.
+    </p>
+    <div class="ev">
+<span class="cmt">-- بعد تشغيل الإصلاح كما هو:</span>
+GET /rest/v1/orders?select=*        <span class="bad">→ 200  كل الطلبات، مع أسماء المشترين وإثباتات الدفع</span>
+    </div>
+    <p>أي أن أحد بنود فحصك الخاص («قراءة كل بيانات المشترين») سيبقى فاشلاً بعد الإصلاح.</p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح — استبدل السياسة بدالة</span>
+      <p>اسحب صلاحية القراءة الجماعية، واسمح فقط بجلب <strong>طلب واحد بمرجعه</strong> عبر دالة
+        مُعرَّفة بأمان. أضف هذا في نهاية ملف الإصلاح:</p>
+      <div class="ev">
+<span class="cmt">-- اسمح بالبحث عن طلب واحد فقط، بلا سرد الجدول</span>
+drop policy if exists "orders: قراءة بمتابعة الطلب" on orders;
+revoke select on orders from anon, authenticated;
+
+create or replace function get_order_by_reference(ref text)
+returns table (reference text, "productName" text, total numeric,
+               currency text, status text, "licenseKey" text, "createdAt" text)
+language sql security definer set search_path = public as $$
+  select o.reference, o."productName", o.total, o.currency,
+         o.status, o."licenseKey", o."createdAt"::text
+  from orders o
+  where o.reference = ref
+  limit 1;
+$$;
+grant execute on function get_order_by_reference(text) to anon, authenticated;
+      </div>
+      <p>ثم عدّل <code class="inl">db.js → getOrder()</code> ليستدعي
+        <code class="inl">client.rpc('get_order_by_reference', { ref })</code> بدل
+        <code class="inl">.from('orders').select()</code>. صندوق «متابعة الطلب» سيعمل كما هو.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-med">
+  <div class="head">
+    <span class="badge">متوسطة</span>
+    <h3>تعارض في robots.txt · وبيانات حساسة في كاش المتصفح
+      <span class="loc">robots.txt:20-25 · sw.js:35-38</span></h3>
+  </div>
+  <div class="body">
+    <ul>
+      <li><code class="inl">robots.txt</code> فيه <code class="inl">Allow: /data/</code> و
+        <code class="inl">Disallow: /*.json$</code> في الوقت نفسه — تعارض صريح. والأهم:
+        <strong>robots.txt لا يحمي شيئاً</strong> من البشر، فحلّ تسريب المفاتيح ليس هنا بل في الملف نفسه.</li>
+      <li>الـService Worker يخزّن <code class="inl">data/products.json</code> و
+        <code class="inl">data/settings.json</code> في كاش المتصفح. هذا لا يسرّب شيئاً (الكاش محلي)،
+        لكنه يعني أن تغيير الأسعار قد يبقى أسبوعاً على جهاز زائر قديم.</li>
+    </ul>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>احذف سطر <code class="inl">Disallow: /*.json$</code> أو سطر <code class="inl">Allow: /data/</code>
+        (الأفضل: اسمح للمجلد وامنع ملف الإعدادات وحده). لا تعدّل الـService Worker — سلوكه صحيح ومقصود.</p>
+    </div>
+  </div>
+</div>
+
+<div class="issue c-med">
+  <div class="head">
+    <span class="badge">متوسطة</span>
+    <h3>صور معاينة ميتة وهويات وهمية
+      <span class="loc">data/products.json — previewImage / githubInviteUrl · settings.json</span></h3>
+  </div>
+  <div class="body">
+    <p>
+      كل منتج له <code class="inl">previewImage: https://nova.dev/images/…</code> —
+      نطاق محجوب في كودك نفسه (<code class="inl">DEAD_URL_HOSTS</code>) فلا صورة تُعرض.
+      و<code class="inl">githubInviteUrl: https://github.com/nova-dev/…</code> — حساب غير موجود.
+      وكذلك <code class="inl">linkedin.com/in/nova-dev</code>.
+    </p>
+    <div class="fix">
+      <span class="t">✓ الإصلاح</span>
+      <p>إما ارفع صوراً حقيقية إلى <code class="inl">assets/</code> واستبدل الروابط، أو احذف الحقل
+        نهائياً — الواجهة تتعامل مع غيابه بأناقة (الفارغ لا يُرسم). نفس الشيء مع روابط GitHub وLinkedIn.</p>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec"><span class="n">٤</span> ما هو جيد فعلاً — لا تكسره</h2>
+<p class="sec-sub">المشروع مبني بعناية أعلى من المتوسط بكثير. هذه النقاط تعمل بشكل صحيح ومتقن:</p>
+
+<div class="issue c-good">
+  <div class="head"><span class="badge">ممتاز</span><h3>طبقة البيانات الهجينة</h3></div>
+  <div class="body">
+    <p><code class="inl">db.js</code> يسقط تلقائياً إلى الوضع المحلي عند غياب المفتاح أو انقطاع الشبكة،
+      بلا رسالة خطأ وبلا تعطّل. تصميم نادر الجودة في مشاريع ثابتة بهذا الحجم.</p>
+  </div>
+</div>
+
+<div class="issue c-good">
+  <div class="head"><span class="badge">ممتاز</span><h3>بنية النشر على Cloudflare Pages — القرار صحيح تماماً</h3></div>
+  <div class="body">
+    <p>سببان حاسمان، وكلاهما صحيح:</p>
+    <ul>
+      <li><strong>الاستخدام التجاري مسموح</strong> في الخطة المجانية. وهذا ليس تفضيلاً —
+        <strong>GitHub Pages يمنع صراحةً</strong> استخدامه لمتجر إلكتروني في شروط الخدمة،
+        و<strong>Vercel المجاني يمنع الاستخدام التجاري</strong>. أي أنهما ليسا خياراً أصلاً.</li>
+      <li><strong>نطاق ترددي بلا حدّ</strong> — لن تدفع شيئاً مهما زاد الزوار.</li>
+    </ul>
+    <p>ملفات <code class="inl">_headers</code> و<code class="inl">_redirects</code> و
+      <code class="inl">build-dist.py</code> كلها صحيحة ومكتوبة بفهم حقيقي للحدود — وسبب وجود
+      <code class="inl">build-dist.py</code> (غياب ملف استثناء + ذاكرة الأصول التي لا رجعة فيها) دقيق 100%.</p>
+  </div>
+</div>
+
+<div class="issue c-good">
+  <div class="head"><span class="badge">ممتاز</span><h3>الاختبارات · CSP · PWA · الصفحات القانونية</h3></div>
+  <div class="body">
+    <ul>
+      <li><strong>189 فحصاً</strong> بينها 3 ملفات تشغّل الصفحات الفعلية في jsdom وتنقر فعلياً وتتصل بالقاعدة.
+        مستوى اختبار نادر في مشروع شخصي.</li>
+      <li><strong>CSP كاملة</strong> بلا <code class="inl">unsafe-inline</code> للسكربتات، مع 5 ترويسات أمان
+        و HSTS — مُعدّة بدقة وتُقرأ صح.</li>
+      <li><strong>PWA حقيقية</strong>: أيقونات maskable، اختصارات، وService Worker باستراتيجية
+        network-first للبيانات وcache-first للأصول. صحيح ومقصود.</li>
+      <li><strong>3 صفحات قانونية</strong> بهوية الموقع، تعمل بلا JS وبلا إنترنت — وسياسة استرجاع
+        14 يوماً بجدول لكل وسيلة دفع.</li>
+    </ul>
+    <p class="sec-sub" style="margin-top:12px;margin-bottom:0">
+      ⚠️ ملاحظة واحدة: فحوصاتك الـ189 <strong>كلها خضراء</strong> — ومع ذلك لم تكتشف أي مانع من المانعات
+      الثلاثة. لأنها تفحص «هل الكود يعمل؟» لا «هل النتيجة صحيحة؟».
+      إضافة فحص واحد يقرأ <code class="inl">orders.payerEmail</code> فعلياً من القاعدة كانت ستكشف المانع الأول.
+    </p>
+  </div>
+</div>
+
+<h2 class="sec"><span class="n">٥</span> النشر المجاني — الخطة الفعلية</h2>
+<p class="sec-sub">الأرقام حقيقية ومُتحقَّق منها من دليل النشر في مشروعك.</p>
+
+<table>
+  <thead><tr><th>المورّد</th><th>الحدّ المجاني</th><th>تجاري؟</th><th>الحكم</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Cloudflare Pages</strong></td><td>نطاق ترددي بلا حدّ · 500 بناء/شهر · 20,000 ملف</td><td>✅ مسموح</td><td><strong>اختيارك صحيح — ابدأ به</strong></td></tr>
+    <tr><td>GitHub Pages</td><td>100GB/شهر · 1GB موقع</td><td>❌ <strong>ممنوع صراحةً</strong> لمتجر</td><td>غير صالح</td></tr>
+    <tr><td>Vercel (مجاني)</td><td>100GB/شهر</td><td>❌ ممنوع تجارياً</td><td>غير صالح</td></tr>
+    <tr><td>Netlify (مجاني)</td><td>100GB/شهر · 300 دقيقة بناء</td><td>✅ مسموح</td><td>بديل جيد</td></tr>
+    <tr><td><strong>Supabase (مجاني)</strong></td><td>500MB قاعدة · 5GB نقل · 50k مستخدم</td><td>✅ مسموح</td><td>كافٍ جداً لمتجرك</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <p><strong>⚠️ فخّ Supabase المجاني الذي يجب أن تعرفه:</strong>
+    المشاريع المجانية <strong>تُوقف تلقائياً بعد 7 أيام بلا نشاط</strong>، فيتوقف الموقع عن جلب
+    المنتجات حتى تفتح اللوحة وتُعيد تنشيطه يدوياً. لمتجر زوّاره قليلون، هذا سيحدث فعلاً.</p>
+  <p><strong>الحل البسيط (5 دقائق، بلا كود):</strong> أنشئ مهمة مجانية على
+    <code class="inl">cron-job.org</code> تطلب رابط قاعدة بياناتك مرة كل 3 أيام. هذا يكفي لمنع الإيقاف.</p>
+  <p><strong>البديل الأبسط تماماً:</strong> إن أردت صفر تعقيد وصفر اعتماد على قاعدة بيانات —
+    احذف مفاتيح Supabase من <code class="inl">settings.json</code> وسيعمل الموقع كاملاً في الوضع المحلي
+    (المنتجات من JSON، والطلبات تصل إليك بالبريد أو واتساب). متجر ثابت 100% بلا أي سطح هجوم.
+    لكنك تخسر رؤية الطلبات من اللوحة.</p>
+</div>
+
+<h2 class="sec"><span class="n">٦</span> خطة العمل — بالترتيب</h2>
+
+<div class="phase">
+  <div class="ph">
+    <h3>المرحلة 1 — قبل النشر · إلزامية</h3>
+    <span class="time">~45 دقيقة</span>
+  </div>
+  <ol>
+    <li>شغّل <code>supabase-security-fix.sql</code> في Supabase → SQL Editor.
+      <em>هذا وحده يحلّ المانع الأول ويغلق المانع الثاني جزئياً.</em></li>
+    <li>احذف <code>licenseKeys</code> و <code>usedKeys</code> من <code>data/products.json</code>.
+      <em>يحلّ النصف الثاني من تسريب المفاتيح.</em></li>
+    <li>احذف رابط «لوحة الأدمن» من فوتر <code>index.html</code> (السطر 206).
+      <em>يغلق المانع الثالث فوراً.</em></li>
+    <li>أضف دالة <code>get_order_by_reference</code> (القسم ٣ أعلاه) وأغلق قراءة الطلبات الجماعية.</li>
+    <li>تعطّل كل وسيلة دفع لا تملكها فعلاً — وتبقّي واحدة حقيقية.</li>
+    <li>شغّل <code>python tools/build-dist.py</code> وتأكد أنه قال «🎉 جاهز للنشر».</li>
+    <li>انشر مجلد <code>dist/</code> بالسحب والإفلات على Cloudflare Pages.</li>
+    <li>افتح الموقع وجرّب بنفسك: أنشئ طلباً وهمياً ثم تأكد أنك تراه في لوحة Supabase.
+      <em>هذا الفحص يكشف أي مانع مشابه في المستقبل.</em></li>
+  </ol>
+</div>
+
+<div class="phase">
+  <div class="ph">
+    <h3>المرحلة 2 — أول أسبوع · تجعل المتجر يعمل فعلاً</h3>
+    <span class="time">~ساعتان</span>
+  </div>
+  <ol>
+    <li><strong>املأ روابط التسليم السبعة</strong> من لوحة الأدمن — بلا هذا لا يوجد بيع فعلي.</li>
+    <li><strong>صحّح أرقام التحميلات</strong> إلى صفر، واحذف «50+ مطوّر»، وأزل ادّعاءات E2EE وCI/CD.</li>
+    <li><strong>حدّث الصفحات القانونية</strong>: صحّح §3 من الخصوصية، واستبدل البريد الحقيقي.</li>
+    <li><strong>أنشئ مهمة cron</strong> كل 3 أيام لمنع إيقاف Supabase المجاني.</li>
+    <li><strong>احصل على نطاق</strong> (Cloudflare Registrar ≈ 10$/سنة) — أو ابدأ بـ
+      <code>اسم-المشروع.pages.dev</code> واستبدل <code>example.com</code> به مؤقتاً في 9 مواضع.</li>
+  </ol>
+</div>
+
+<div class="phase">
+  <div class="ph">
+    <h3>المرحلة 3 — لاحقاً · يحوّله من تجربة إلى مشروع</h3>
+    <span class="time">عند الحاجة</span>
+  </div>
+  <ol>
+    <li><strong>Supabase Auth لحساب الأدمن</strong> — البوابة المحلية الحالية ليست مصادقة.
+      حساب واحد ببريد وكلمة مرور، ثم سياسات للمستخدم الموثّق. هذا ما يجعل اللوحة آمنة فعلاً
+      (القالب جاهز كتعليق في نهاية ملف الإصلاح).</li>
+    <li><strong>حدّ معدّل للطلبات</strong> — حالياً أي زائر يستطيع إغراق جدول الطلبات.
+      حل بسيط: قيد في سياسة الإدراج + مرجع فريد (المرجع العشوائي موجود فعلاً).</li>
+    <li><strong>صور منتجات حقيقية</strong> — أكبر تحسين مبيعي متبقٍ، وأرخصه.</li>
+    <li><strong>رفع رقم الإصدار إلى v17</strong> مع أي تعديل على CSS/JS — وتذكّر:
+      <code>index.html</code> + <code>admin.html</code> + <code>sw.js</code> + الصفحات القانونية معاً.</li>
+  </ol>
+</div>
+
+<h2 class="sec"><span class="n">٧</span> ملاحظة على الأدوات الخاصة بك</h2>
+<div class="note">
+  <p><strong>وكيل التدقيق الأمني فيه خطر غير مقصود:</strong> في
+    <code class="inl">tools/audit-security.py</code> السطر 169-170 يوجد هجوم
+    <code class="inl">DELETE suggestions?id=gte.0</code> — وهو <strong>يمسح كل الاقتراحات فعلياً</strong>
+    إن كانت الكتابة مسموحة (وهي مسموحة الآن). لحسن الحظ الجدول فارغ حالياً، لكن لو وصلت اقتراحات حقيقية
+    ثم شغّلت التدقيق، ستمحوها.</p>
+  <p><strong>الإصلاح:</strong> استبدل الهدف بمعرّف تجريبي مثل بقية الهجمات
+    (<code class="inl">?id=eq.999999</code>) — النتيجة الأمنية نفسها بلا أي خطر على بيانات حقيقية.</p>
+</div>
+
+<footer class="rep">
+  تقرير تحليل فني — معرض الأعمال (Nova) · 25 سبتمبر 2026<br>
+  كل نتيجة في هذا التقرير مُثبتة بتجربة عملية على القاعدة الحيّة أو بقراءة الكود المصدري مباشرة.
+</footer>
+
+</div>
+</body>
+</html>

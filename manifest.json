@@ -1,0 +1,56 @@
+{
+  "id": "/",
+  "name": "معرض الأعمال - Nova",
+  "short_name": "معرض أعمال",
+  "description": "معرض أعمال شخصي لعرض وبيع المنتجات الرقمية للمطورين. يعمل بلا سيرفر مع قاعدة بيانات أونلاين.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#0d0e12",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "developer"],
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icon-512.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "تتبّع طلب",
+      "short_name": "تتبّع",
+      "url": "./index.html#orderTracking",
+      "description": "تتبّع حالة طلبك واستلم مفتاح الترخيص"
+    },
+    {
+      "name": "المنتجات",
+      "short_name": "المنتجات",
+      "url": "./index.html#products",
+      "description": "تصفّح كل المنتجات الرقمية"
+    }
+  ]
+}

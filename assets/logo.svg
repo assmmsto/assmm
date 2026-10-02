@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="شعار معرض الأعمال Nova">
+  <rect width="120" height="120" rx="26" fill="#f59e0b"/>
+  <text x="50%" y="65%" text-anchor="middle" font-family="Inter,Tahoma" font-weight="700" font-size="78" fill="#ffffff" dy=".32em">ن</text>
+  <rect x="8" y="8" width="26" height="26" rx="7" fill="#0d0e12"/>
+  <circle cx="21" cy="21" r="7" fill="#47deb3"/>
+</svg>

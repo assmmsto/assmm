@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الصفحة غير موجودة — معرض الأعمال</title>
+  <meta name="description" content="الصفحة التي تبحث عنها غير موجودة. عُد إلى معرض الأعمال لتصفّح المنتجات الرقمية.">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#f59e0b">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=33">
+  <style>
+    .nf {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-xl) var(--space-md);
+      gap: var(--space-sm);
+    }
+    .nf-code {
+      font-family: var(--font-num, 'Oswald', sans-serif);
+      font-size: clamp(5rem, 18vw, 9rem);
+      line-height: 1;
+      color: var(--color-primary);
+      letter-spacing: 0.04em;
+    }
+    .nf-links { display: flex; flex-wrap: wrap; gap: var(--space-sm); justify-content: center; margin-top: var(--space-md); }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <div class="nf-code" dir="ltr">404</div>
+    <h1 class="font-headline-md">هذه الصفحة غير موجودة</h1>
+    <p class="font-body-md text-on-surface-variant" style="max-width: 46ch">
+      الرابط الذي فتحته غير صحيح، أو أن الصفحة نُقلت. لا مشكلة — كل المنتجات
+      لا تزال في مكانها.
+    </p>
+    <div class="nf-links">
+      <a class="btn btn-primary btn-size-md" href="index.html">
+        <span class="material-symbols-outlined" style="font-size:18px">storefront</span>
+        تصفّح المنتجات
+      </a>
+      <a class="btn btn-secondary btn-size-md" href="index.html#trackSection">
+        <span class="material-symbols-outlined" style="font-size:18px">local_shipping</span>
+        تتبّع طلبك
+      </a>
+    </div>
+  </main>
+</body>
+</html>

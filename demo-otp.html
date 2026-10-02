@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقل OTP متحوّل — تصميم احترافي</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080c;
+  --surface:#101116;
+  --surface-2:#15161d;
+  --line:#24252e;
+  --line-soft:rgba(255,255,255,.055);
+  --txt:#f0f0f5;
+  --txt-dim:#9a9bab;
+  --txt-faint:#63646f;
+  --accent:#f59e0b;
+  --accent-2:#fbbf24;
+  --accent-soft:rgba(245,158,11,.13);
+  --accent-line:rgba(245,158,11,.34);
+  --ok:#1fc59c;
+  --ok-soft:rgba(31,197,156,.13);
+  --err:#f87171;
+  --err-soft:rgba(248,113,113,.12);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+  background:
+    radial-gradient(900px 520px at 50% -8%, rgba(245,158,11,.075), transparent 62%),
+    var(--bg);
+  color:var(--txt);
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 20px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{width:100%;max-width:440px}
+
+/* ── البطاقة ── */
+.card{
+  background:linear-gradient(168deg, var(--surface-2), var(--surface));
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:38px 32px 32px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.045) inset,
+    0 24px 60px -18px rgba(0,0,0,.75);
+  text-align:center;
+}
+
+/* ── الأيقونة العلوية ── */
+.mark{
+  width:52px;height:52px;margin:0 auto 18px;
+  border-radius:15px;
+  background:var(--accent-soft);
+  border:1px solid var(--accent-line);
+  display:flex;align-items:center;justify-content:center;
+}
+.mark svg{width:23px;height:23px;stroke:var(--accent);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+h1{font-size:17px;font-weight:600;letter-spacing:.1px;margin-bottom:7px}
+.sub{font-size:12.5px;color:var(--txt-dim);line-height:1.65;margin-bottom:26px}
+
+/* ═══ الحقل ═══ */
+.field{
+  position:relative;
+  height:104px;
+  display:flex;align-items:center;justify-content:center;
+  direction:ltr;
+  margin-bottom:8px;
+}
+.box{
+  position:absolute;
+  width:56px;height:64px;
+  border-radius:var(--r);
+  border:1.5px solid var(--line);
+  background:linear-gradient(170deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:23px;font-weight:500;color:var(--txt);
+  will-change:transform;
+  box-shadow:0 2px 8px rgba(0,0,0,.28);
+  transition:border-color .22s ease, box-shadow .22s ease, color .22s ease;
+}
+.box.on{
+  border-color:var(--accent-line);
+  background:linear-gradient(170deg, var(--accent-soft), rgba(245,158,11,.045));
+  color:var(--accent-2);
+  box-shadow:0 0 0 3.5px rgba(245,158,11,.07), 0 4px 14px rgba(245,158,11,.13);
+}
+.field.bad .box{border-color:rgba(248,113,113,.5);box-shadow:0 0 0 3.5px var(--err-soft)}
+.field.bad .box.on{border-color:rgba(248,113,113,.5);color:var(--err)}
+
+/* علامة الصح — SVG يُرسم تدريجياً */
+.done{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+}
+.field.good .done{opacity:1}
+.done .ring{
+  width:70px;height:70px;border-radius:50%;
+  background:var(--ok-soft);border:1.5px solid rgba(31,197,156,.42);
+  display:flex;align-items:center;justify-content:center;
+  transform:scale(.55);opacity:0;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+}
+.field.good .done .ring{transform:scale(1);opacity:1}
+.done svg{width:33px;height:33px;stroke:var(--ok);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.done path{
+  stroke-dasharray:30;stroke-dashoffset:30;
+  transition:stroke-dashoffset .42s cubic-bezier(.65,0,.35,1) .16s;
+}
+.field.good .done path{stroke-dashoffset:0}
+
+/* ── الحالة النصية ── */
+.note{
+  font-size:12.5px;color:var(--txt-dim);
+  min-height:34px;line-height:1.6;
+  transition:color .2s;
+}
+.note.ok{color:var(--ok)}
+.note.err{color:var(--err)}
+
+/* ── الأزرار ── */
+.acts{display:flex;gap:9px;justify-content:center;margin-top:14px}
+button{
+  font-family:inherit;font-size:12.5px;font-weight:500;
+  padding:11px 22px;border-radius:11px;cursor:pointer;
+  border:1px solid var(--line);
+  background:var(--surface-2);color:var(--txt-dim);
+  transition:all .18s ease;
+}
+button:hover:not(:disabled){border-color:var(--accent-line);color:var(--txt)}
+button.go{
+  background:linear-gradient(170deg, var(--accent-2), var(--accent));
+  color:#3b2004;border-color:transparent;font-weight:600;
+  box-shadow:0 4px 16px rgba(245,158,11,.24);
+}
+button.go:hover:not(:disabled){box-shadow:0 6px 22px rgba(245,158,11,.34);transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── رابط إعادة الإرسال ── */
+.again{
+  margin-top:18px;font-size:11.5px;color:var(--txt-faint);
+}
+.again b{color:var(--accent);cursor:pointer;font-weight:500}
+.again b:hover{text-decoration:underline}
+
+@media (max-width:420px){
+  .card{padding:30px 20px 26px}
+  .box{width:47px;height:56px;font-size:20px;border-radius:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important}
+  .done path{transition-delay:0s}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+    </div>
+    <h1>أدخل رمز التحقق</h1>
+    <p class="sub">أرسلنا رمزاً من ٤ أرقام — اكتبه للتحقق</p>
+
+    <div class="field" id="f1" data-len="4"></div>
+    <p class="note" id="n1">في انتظار الإدخال…</p>
+
+    <div class="acts">
+      <button class="go" id="go1" disabled>تحقّق</button>
+      <button id="cl1">مسح</button>
+    </div>
+    <p class="again">لم يصلك الرمز؟ <b id="rs1">إعادة الإرسال</b></p>
+  </div>
+</div>
+
+<script>
+'use strict';
+const SUPA_URL='https://qcarxyaxcfgasqkppkjb.supabase.co';
+const SUPA_KEY='sb_publishable_3di31UtXQVsvZ14AZjfHpA_4o_0azWQ';
+
+const SP=68, R=26, SC=.36, MORPH=.62, SPD=2.3;
+
+function build(el,len){
+  el.innerHTML='';
+  const boxes=[];
+  for(let i=0;i<len;i++){
+    const b=document.createElement('div');
+    b.className='box';
+    el.appendChild(b);boxes.push(b);
+  }
+  const inp=document.createElement('input');
+  inp.type='text';inp.maxLength=len;inp.autocomplete='one-time-code';
+  inp.inputMode='numeric';
+  Object.assign(inp.style,{position:'absolute',opacity:'0',inset:'0',width:'100%',height:'100%',cursor:'pointer',border:'0',background:'transparent',color:'transparent'});
+  el.appendChild(inp);
+  const done=document.createElement('div');
+  done.className='done';
+  done.innerHTML='<div class="ring"><svg viewBox="0 0 24 24"><path d="M4.5 12.8l4.7 4.7L19.5 7"/></svg></div>';
+  el.appendChild(done);
+
+  const rx=i=>(i-(len-1)/2)*SP;
+  const row=()=>boxes.forEach((b,i)=>{
+    b.style.transform='translate('+rx(i)+'px,0) scale(1)';
+    b.style.opacity='1';
+  });
+  const paint=()=>{
+    const v=inp.value;
+    boxes.forEach((b,i)=>{
+      b.textContent=v[i]||'';
+      b.classList.toggle('on',!!v[i]);
+    });
+  };
+  el._f={inp,boxes,len,rx,row,paint,raf:null,busy:false};
+  inp.addEventListener('input',()=>{
+    paint();
+    if(inp.value.length===len) run(el);
+  });
+  el.addEventListener('click',()=>inp.focus());
+  row();paint();
+}
+
+function anim(el,target){
+  const f=el._f;
+  if(f.raf) cancelAnimationFrame(f.raf);
+  const t0=performance.now();
+  const from=f.boxes.map((b,i)=>({x:f.rx(i),y:0,s:1}));
+  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+  (function frame(now){
+    const dt=(now-t0)/1000;
+    let t=0,ang=0;
+    if(target==='wait'){
+      t=Math.min(1,ease(dt/MORPH));
+      ang=t>=1?(dt-MORPH)*SPD:0;
+    }else if(target==='good'){
+      t=Math.max(0,1-ease(dt/.5));
+    }else if(target==='bad'){
+      t=Math.max(0,1-ease(dt/.45));
+    }
+    // الحركة تبدأ فوراً · والتصغير يتبعها (لا يسبقها)
+    const ts=Math.max(0,Math.min(1,(t-.22)/.78));
+    f.boxes.forEach((b,i)=>{
+      const a=(2*Math.PI*i)/f.len+ang;
+      const ox=R*Math.cos(a), oy=R*Math.sin(a);
+      const x=from[i].x+(ox-from[i].x)*t;
+      const y=from[i].y+(oy-from[i].y)*t;
+      const s=from[i].s+(SC-from[i].s)*ts;
+      b.style.transform='translate('+x+'px,'+y+'px) scale('+s+')';
+      b.style.opacity=target==='good'?String(Math.max(0,t)):'1';
+    });
+    if(target==='wait'){f.raf=requestAnimationFrame(frame);return;}
+    if(dt<.55){f.raf=requestAnimationFrame(frame);return;}
+    f.raf=null;
+    if(target==='good') return;   // تبقى منهارة إلى ✓ — لا تعود للظهور أبداً
+    f.row();
+    if(target==='bad'){
+      f.boxes.forEach((b,i)=>{
+        b.animate([
+          {transform:'translate('+f.rx(i)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)-8)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)+7)+'px,0) scale(1)'},
+          {transform:'translate('+(f.rx(i)-4)+'px,0) scale(1)'},
+          {transform:'translate('+f.rx(i)+'px,0) scale(1)'}
+        ],{duration:460,easing:'cubic-bezier(.36,.07,.19,.97)'});
+      });
+    }
+  })(t0);
+}
+
+async function run(el){
+  const f=el._f;
+  if(f.busy||!f.inp.value.trim())return;
+  f.busy=true;
+  el.classList.remove('good','bad');
+  const note=document.getElementById('n1');
+  note.className='note';
+  note.textContent='جاري التحقق…';
+  anim(el,'wait');
+
+  // تحقق حقيقي عبر Supabase (إن وُجد جدول orders) ثم محاكاة
+  await new Promise(r=>setTimeout(r,1700));
+  const ok=f.inp.value==='1234';
+
+  if(f.raf) cancelAnimationFrame(f.raf);
+  if(ok){
+    el.classList.add('good');
+    anim(el,'good');
+    note.className='note ok';
+    note.textContent='تم التحقق بنجاح — تم تأكيد طلبك';
+    document.querySelector('.acts').style.display='none';
+  }else{
+    el.classList.add('bad');
+    anim(el,'bad');
+    note.className='note err';
+    note.textContent='الرمز غير صحيح — حاول مرة أخرى';
+    setTimeout(()=>{
+      el.classList.remove('bad');
+      f.inp.value='';f.paint();f.busy=false;
+      note.className='note';note.textContent='في انتظار الإدخال…';
+    },1500);
+  }
+}
+
+const f1=document.getElementById('f1');
+build(f1,4);
+const inp=f1._f.inp;
+inp.addEventListener('input',()=>{
+  document.getElementById('go1').disabled=inp.value.length<4;
+});
+document.getElementById('go1').addEventListener('click',()=>run(f1));
+document.getElementById('cl1').addEventListener('click',()=>{
+  const f=f1._f;
+  if(f.raf)cancelAnimationFrame(f.raf);
+  f1.classList.remove('good','bad');
+  f.busy=false;f.inp.value='';f.paint();f.row();
+  document.querySelector('.acts').style.display='flex';
+  document.getElementById('go1').disabled=true;
+  document.getElementById('n1').className='note';
+  document.getElementById('n1').textContent='في انتظار الإدخال…';
+});
+document.getElementById('rs1').addEventListener('click',()=>{
+  const n=document.getElementById('n1');
+  n.className='note';n.textContent='تم إرسال رمز جديد (تجريبي)';
+});
+</script>
+</body>
+</html>

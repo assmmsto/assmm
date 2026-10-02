@@ -1,0 +1,122 @@
+# ═══════════════════════════════════════════════════════════════
+#  إعدادات السيرفر — معرض الأعمال (Nova)  ·  نسخة الإنتاج
+#  يعمل على: Apache / cPanel / أي استضافة تدعم .htaccess
+#  ملاحظة: إن كانت استضافتك Nginx، انقل هذه القواعد لإعدادات الخادم.
+# ═══════════════════════════════════════════════════════════════
+
+# ── 0) الصفحة الافتراضية ──
+DirectoryIndex index.html
+
+# ── 1) منع عرض محتويات المجلدات ──
+Options -Indexes -MultiViews
+
+# ── 2) منع الوصول للملفات المخفية (.git, .env, .workbuddy-ai) ──
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# منع الوصول لمجلد الملاحظات الداخلية
+RedirectMatch 404 /\.workbuddy-ai
+
+# منع الوصول لمجلدات التطوير (اختبارات وأدوات بناء)
+RedirectMatch 404 /(tests|tools)/
+
+# ── 2-ب) صفحة الخطأ 404 المخصّصة ──
+#  بدل صفحة السيرفر الجرداء: صفحة عربية بهوية الموقع تعيد الزائر للمتجر.
+#  ⚠️ ملاحظة نشر: هذه التعليمات تعمل على Apache فقط.
+#  على GitHub Pages / Netlify لا يُقرأ .htaccess — لكن كلاهما يخدم 404.html
+#  تلقائياً من الجذر، فلا حاجة لإعداد إضافي هناك.
+ErrorDocument 404 /404.html
+
+# ── 3) حجب ملفات التطوير والوثائق — ليست جزءاً من الموقع العام ──
+#  تشمل: سكربتات الاختبار، مخطط قاعدة البيانات، الوثائق، الصفحات التجريبية.
+#  ⚠️ مهم: SETUP-ONLINE.md و README.md يشرحان البنية الداخلية — لا تُخدم علناً.
+<FilesMatch "\.(py|sql|md|cmd|bat|log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+<FilesMatch "^(demo-.*\.html|admin_stitch\.html|_pv\..*)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ── 4) فرض HTTPS — يتخطى localhost كي لا يعطّل التجربة المحلية ──
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !^localhost [NC]
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── 5) منع القراءة المباشرة لملفات البيانات (اختياري) ──
+# أزل التعليق إن أردت منع فتح data/settings.json مباشرة من المتصفح
+# <FilesMatch "\.(json|sql)$">
+#     Order allow,deny
+#     Deny from all
+# </FilesMatch>
+
+# ── 6) تفعيل الضغط (يسرّع الموقع) ──
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml text/plain
+</IfModule>
+
+# ── 7) تخزين مؤقت للملفات الثابتة ──
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css              "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/svg+xml         "access plus 1 month"
+    ExpiresByType application/manifest+json "access plus 1 week"
+    # صفحات HTML: لا تُخزَّن — ليراها الزائر محدّثة فوراً بعد أي تعديل
+    ExpiresByType text/html             "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # HTML دائماً يُتحقق منه من السيرفر (يمنع نسخة قديمة عالقة)
+    <FilesMatch "\.(html)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+    # الأصول ذات الإصدار (?v=) ثابتة — تُخزَّن طويلاً
+    <FilesMatch "\.(css|js|svg|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
+# ── 8) ترويسات أمان ──
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+    # سياسة أمان المحتوى — تمنع حقن سكربتات من نطاقات غريبة.
+    # مسموح: نفس الموقع + jsdelivr (supabase/qrious) + خطوط Google + Supabase للاتصال.
+    # 'unsafe-inline' مطلوب للأنماط لأن الواجهة تستخدم style="..." بكثافة.
+    # formspree في connect-src — مطابقة لـ _headers (Cloudflare) كي لا يفشل
+    # purchasesEndpoint على Formspree بصمت بفعل CSP على استضافة Apache.
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net https://formspree.io; worker-src 'self'; manifest-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:; object-src 'none'"
+
+    # HSTS — يُفعَّل بعد التأكد أن HTTPS يعمل تماماً (اتركه معلّقاً حتى تتأكد)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ═══════════════════════════════════════════════════════════════
+#  9) حماية لوحة الأدمن بكلمة مرور — مُعطّلة افتراضياً
+# ───────────────────────────────────────────────────────────────
+#  ⚠️ لا تُفعّلها قبل إنشاء ملف .htpasswd، وإلا لن تُفتح اللوحة أبداً.
+#
+#  خطوات التفعيل:
+#   1) ولّد كلمة مرور مشفّرة عبر أي مولد htpasswd أونلاين، أو بالأمر:
+#        htpasswd -c .htpasswd admin
+#   2) ارفع ملف .htpasswd إلى مجلد خارج الملفات العامة (مثل /home/user/)
+#   3) أزل علامة # من الأسطر أدناه وعدّل المسار إلى مكان ملفك:
+#
+# <Files "admin.html">
+#     AuthType Basic
+#     AuthName "لوحة الأدمن — معرض الأعمال"
+#     AuthUserFile "/home/USER/.htpasswd"
+#     Require valid-user
+# </Files>
+# ═══════════════════════════════════════════════════════════════

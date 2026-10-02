@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════════
+#  robots.txt — معرض الأعمال (Nova)
+#  ⚠️ استبدل https://example.com بنطاقك الحقيقي.
+# ═══════════════════════════════════════════════════════════════
+
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /data/
+
+# لوحة الأدمن — لا تُفهرَس أبداً
+Disallow: /admin.html
+
+# ملفات التطوير والوثائق
+Disallow: /test-
+Disallow: /*.py$
+Disallow: /*.sql$
+Disallow: /*.md$
+Disallow: /demo-
+Disallow: /admin_stitch.html
+
+# مجلدات داخلية
+Disallow: /.workbuddy-ai/
+Disallow: /.git/
+
+# ⚠️ تذكير مهم: robots.txt **ليس أداة أمن**. هو اتفاق مع محركات البحث
+# الاحترامية فقط، ولا يمنع أي إنسان من فتح أي رابط. حماية البيانات الحقيقية
+# تكون بعدم نشرها أصلاً (انظر tools/build-dist.py) وبسياسات RLS في Supabase.
+# (كان هنا سطر `Disallow: /*.json$` يتعارض مع `Allow: /data/` أعلاه — أُزيل.)
+
+Sitemap: https://example.com/sitemap.xml

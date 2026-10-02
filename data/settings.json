@@ -1,0 +1,63 @@
+{
+  "_comment": "إعدادات الموقع — ⚠️ هذا الملف يُنشر علناً. لا تضع فيه أي مفتاح سرّي (githubToken يجب أن يبقى فارغاً). حقول الدفع الفارغة تُخفى تلقائياً من الواجهة حتى تملأها.",
+  "platformName": "معرض الأعمال",
+  "platformNameEn": "Work Showcase",
+  "logoLetter": "ع",
+  "logoImage": null,
+  "heroTitle": "منتجات رقمية للمطورين",
+  "heroSub": "استكشف أدوات برمجية، واجهات API، قوالب، وتطبيقات جاهزة للإطلاق — بلا سيرفر، ودفع مباشر من محفظة إلى محفظة.",
+  "heroBadge": "بلا سيرفر · PWA · محافظ رقمية ومحلية",
+  "devName": "أحمد محمد",
+  "devTitle": "مهندس برمجيات · مطور أدوات مفتوحة المصدر",
+  "contactEmail": "",
+  "contactWhatsapp": "",
+  "contactGithub": "",
+  "contactLinkedin": "",
+  "theme": { "default": "dark", "allowToggle": true },
+
+  "_countries_comment": "قائمة الدول المتاحة للمحافظ المحلية — يظهر منها فقط ما له محفظة مُفعّلة. أضف أي دولة هنا ثم أضف محفظة لها من تبويب المحافظ.",
+  "countries": {
+    "SY": "سوريا",
+    "EG": "مصر",
+    "SA": "السعودية",
+    "AE": "الإمارات",
+    "JO": "الأردن",
+    "IQ": "العراق",
+    "MA": "المغرب",
+    "DZ": "الجزائر",
+    "TN": "تونس",
+    "LY": "ليبيا",
+    "SD": "السودان",
+    "YE": "اليمن",
+    "PS": "فلسطين",
+    "LB": "لبنان",
+    "KW": "الكويت",
+    "QA": "قطر",
+    "BH": "البحرين",
+    "OM": "عُمان",
+    "TR": "تركيا",
+    "OTHER": "دولة أخرى"
+  },
+
+  "_proof_comment": "مسارات إرسال إثبات الدفع. الفارغ منها لا يُعرض للمشتري.",
+  "proof": {
+    "allowUpload": false,
+    "allowWhatsapp": true,
+    "allowEmail": true,
+    "maxImageMb": 2,
+    "maxImagePx": 1280
+  },
+
+  "githubToken": "",
+  "githubRepo": "",
+  "githubBranch": "main",
+  "supabaseUrl": "https://qcarxyaxcfgasqkppkjb.supabase.co",
+  "supabaseKey": "sb_publishable_3di31UtXQVsvZ14AZjfHpA_4o_0azWQ",
+  "adminEmail": "",
+
+  "discounts": [
+    { "code": "WELCOME10", "label": "خصم الترحيب 10%", "amount": 10, "type": "percent", "once": true }
+  ],
+  "purchasesEndpoint": "",
+  "stats": { "productsCount": 0, "downloadsCount": 0 }
+}

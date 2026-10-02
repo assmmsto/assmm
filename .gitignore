@@ -1,0 +1,25 @@
+# Build / dependencies
+node_modules/
+*.log
+
+# مخرَج النشر — يُبنى بـ `python tools/build-dist.py` عند كل نشر.
+# لا يُتتبَّع في Git: هو نسخة مشتقّة من الملفات الأصلية.
+dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Editor local state (kilo / cursor)
+.kilo/
+.cursor/
+.mimosa/
+.zwork/
+
+# مساحة عمل المساعد الآلي — ملاحظات المشروع الخاصة (لا تُنشر)
+# ملاحظة: الاختبارات وأدوات البناء في tests/ و tools/ وهي مُتتبَّعة عمداً.
+.workbuddy-ai/
+
+# Env secrets (never commit — admin secrets stay local)
+.env
+*.local

@@ -1,0 +1,16 @@
+{
+  "name": "exhibit-showcase",
+  "version": "1.0.0",
+  "description": "Nova Work Showcase",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/dom-index.js"
+  },
+  "author": "Ahmad",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "jsdom": "^30.1.1"
+  }
+}

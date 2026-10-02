@@ -1,0 +1,268 @@
+{
+  "_comment": "الكتالوج العام — يُنشر علناً. ⚠️ لا تضع هنا أي مفتاح ترخيص أو رابط تسليم سرّي. المفاتيح تعيش في جدول Supabase (products.licenseKeys) وحده، وهي محجوبة عن المفتاح العام بسياسات RLS.",
+  "products": [
+    {
+      "id": 1,
+      "name": "ConfigForge CLI",
+      "slug": "config-forge-cli",
+      "short": "أداة سطر أوامر لتوليد وإدارة ملفات الإعداد",
+      "long": "يولّد ConfigForge ملفات إعداد (yaml / json / env) من قوالب، يحوّل بين الصيغ، ويدعم متغيّرات سرية آمنة. مثالية للمطورين الذين يديرون بيئات متعددة. يدعم التكامل مع CI/CD.",
+      "type": "cli",
+      "kind": "cli",
+      "platform": "Cross-platform (Windows • macOS • Linux)",
+      "price": 0,
+      "currency": "USD",
+      "version": "2.3.0",
+      "features": [
+        "توليد إعدادات من القوالب",
+        "تحويل yaml ↔ json ↔ env",
+        "متغيّرات سرية مشفّرة",
+        "تكامل CI/CD"
+      ],
+      "licenseMode": "none",
+      "hiddenFields": [],
+      "status": "active",
+      "featured": true,
+      "downloads": 0,
+      "delivery": {
+        "mode": "install",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [
+          "npm i -g @nova/config-forge",
+          "config-forge init",
+          "config-forge apply --env production"
+        ],
+        "fileName": "",
+        "size": "",
+        "note": ""
+      }
+    },
+    {
+      "id": 2,
+      "name": "Nova UI Kit",
+      "slug": "nova-ui-kit",
+      "short": "مجموعة مكوّنات واجهة مطوّر احترافية (Figma + Tailwind)",
+      "long": "مكتوبة بـ Tailwind CSS ومصممة بدقة، تشمل 48 مكوّناً جاهزاً، نظام لون أساسي، ودعم للوضعين الفاتح والداكن. ملفّات Figma + الكود المصدري.",
+      "type": "file",
+      "kind": "file",
+      "platform": "Figma • Tailwind CSS",
+      "price": 0,
+      "currency": "USD",
+      "version": "1.0.0",
+      "features": [
+        "48 مكوّناً جاهزاً",
+        "Figma + React + Tailwind",
+        "دعم الوضع الداكن",
+        "قواعد توجيه موحّدة"
+      ],
+      "licenseMode": "none",
+      "hiddenFields": [],
+      "status": "active",
+      "featured": false,
+      "downloads": 0,
+      "delivery": {
+        "mode": "file",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [],
+        "fileName": "nova-ui-kit-1.0.0.zip",
+        "size": "",
+        "note": "يشمل ملفات Figma والكود المصدري."
+      }
+    },
+    {
+      "id": 3,
+      "name": "Apex Dashboard",
+      "slug": "apex-dashboard",
+      "short": "لوحة تحكم متكاملة للمشاريع والمهام",
+      "long": "منصة متكاملة لإدارة المشاريع والمهام. تدعم الفرق الصغيرة والمتوسطة مع تقارير مفصلة، تحليلات أداء، وتزامن فوري بين الأعضاء.",
+      "type": "exe",
+      "kind": "exe",
+      "platform": "Windows 10+",
+      "price": 29,
+      "currency": "USD",
+      "version": "2.1.0",
+      "features": [
+        "إدارة مهام متقدّمة",
+        "تقارير تفاعلية",
+        "تزامن فوري",
+        "دعم الفرق حتى 10 أعضاء"
+      ],
+      "licenseMode": "key",
+      "licenseNote": "ترخيص تجاري دائم مدى الحياة — يشمل تحديثات الإصدارات الكبرى.",
+      "hiddenFields": [
+        "downloadUrl",
+        "githubUrl",
+        "install"
+      ],
+      "status": "active",
+      "featured": true,
+      "downloads": 0,
+      "delivery": {
+        "mode": "file",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [],
+        "fileName": "ApexDashboard-Setup-2.1.0.exe",
+        "size": "",
+        "note": ""
+      }
+    },
+    {
+      "id": 4,
+      "name": "AuthKit API",
+      "slug": "authkit-api",
+      "short": "API جاهزة للمصادقة والهوية (JWT + OAuth2)",
+      "long": "API Self-hosted جاهزة للمصادقة والهوية. تدعم JWT، OAuth2، SSO، وجدران API. يُشغّل عبر Docker في دقائق.",
+      "type": "api",
+      "kind": "api",
+      "platform": "Docker • Self-hosted",
+      "price": 19,
+      "currency": "USD",
+      "version": "1.2.4",
+      "features": [
+        "JWT + OAuth2",
+        "SSO (Google, GitHub)",
+        "حماية JWT مدمجة",
+        "توثيق Swagger"
+      ],
+      "licenseMode": "key",
+      "licenseNote": "ترخيص تجاري — يشمل تحديثات أمان وترخيص لعدد غير محدود من التطبيقات.",
+      "hiddenFields": [
+        "downloadUrl",
+        "githubUrl",
+        "install"
+      ],
+      "status": "active",
+      "featured": true,
+      "downloads": 0,
+      "delivery": {
+        "mode": "repo",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": false,
+        "commands": [],
+        "fileName": "",
+        "size": "",
+        "note": "تُرسَل دعوة الوصول إلى المستودع الخاص بعد تأكيد الدفع."
+      }
+    },
+    {
+      "id": 5,
+      "name": "Pulse Monitor",
+      "slug": "pulse-monitor",
+      "short": "تطبيق أندرويد لمراقبة الخوادم وواجهات API مع إشعارات فورية",
+      "long": "يراقب Pulse Monitor حالات الخوادم وزمن الاستجابة وواجهات API، ويرسل إشعارات فورية عند أي انقطاع أو بطء. يتضمن لوحة مباشرة، سجلات قابلة للتصدير، ووضعاً داكناً — بدون أذونات زائدة أو تتبع.",
+      "type": "apk",
+      "kind": "apk",
+      "platform": "Android 8.0+",
+      "price": 15,
+      "currency": "USD",
+      "version": "1.4.2",
+      "features": [
+        "مراقبة لحظية حتى 20 هدفاً",
+        "إشعارات Push فورية",
+        "تصدير السجلات CSV",
+        "وضع داكن أصيل"
+      ],
+      "licenseMode": "key",
+      "licenseNote": "ترخيص جهازين لكل مفتاح — تحديثات مجانية لعام كامل.",
+      "hiddenFields": [
+        "downloadUrl",
+        "githubUrl",
+        "install"
+      ],
+      "status": "active",
+      "featured": false,
+      "downloads": 0,
+      "delivery": {
+        "mode": "file",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [],
+        "fileName": "PulseMonitor-1.4.2.apk",
+        "size": "",
+        "note": "فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت."
+      }
+    },
+    {
+      "id": 6,
+      "name": "LandingForge",
+      "slug": "landing-forge",
+      "short": "12 قالب صفحة هبوط جاهزة (HTML + Tailwind) بدعم RTL",
+      "long": "حزمة قوالب صفحات هبوط احترافية مبنية بـ HTML وTailwind CSS فقط — بلا اعتماديات أو إطار عمل. تدعم RTL والوضع الداكن، وتشمل صفحات SaaS، منتج رقمي، تطبيق جوال، وملف أعمال. الكود نظيف وقابل للتخصيص في دقائق.",
+      "type": "file",
+      "kind": "file",
+      "platform": "HTML • Tailwind CSS",
+      "price": 39,
+      "currency": "USD",
+      "version": "2.0.1",
+      "features": [
+        "12 قالباً كاملاً",
+        "دعم RTL أصيل",
+        "وضع داكن/فاتح",
+        "بلا اعتماديات — HTML صافٍ"
+      ],
+      "licenseMode": "key",
+      "licenseNote": "ترخيص استخدام تجاري لمشاريع غير محدودة — يُمنع إعادة البيع كقوالب.",
+      "hiddenFields": [
+        "downloadUrl",
+        "githubUrl",
+        "install"
+      ],
+      "status": "active",
+      "featured": true,
+      "downloads": 0,
+      "delivery": {
+        "mode": "file",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [],
+        "fileName": "landing-forge-2.0.1.zip",
+        "size": "",
+        "note": ""
+      }
+    },
+    {
+      "id": 7,
+      "name": "ClipStash",
+      "slug": "clipstash",
+      "short": "مدير حافظة ذكي لويندوز — حفظ تاريخ النسخ والبحث فيه",
+      "long": "أداة سطح مكتب خفيفة تحفظ تاريخ الحافظة (نصوص، روابط، مقتطفات كود) مع بحث فوري واختصارات عامة. تعمل من شريط النظام، تستهلك أقل من 30MB من الذاكرة، وتخزّن البيانات محلياً بالكامل.",
+      "type": "exe",
+      "kind": "exe",
+      "platform": "Windows 10+",
+      "price": 0,
+      "currency": "USD",
+      "version": "1.2.0",
+      "features": [
+        "تاريخ حافظة حتى 1000 عنصر",
+        "بحث فوري",
+        "اختصار عام Ctrl+Shift+V",
+        "تخزين محلي بالكامل"
+      ],
+      "licenseMode": "none",
+      "hiddenFields": [],
+      "status": "active",
+      "featured": false,
+      "downloads": 0,
+      "delivery": {
+        "mode": "file",
+        "url": "",
+        "inviteUrl": "",
+        "isPublic": true,
+        "commands": [],
+        "fileName": "ClipStash-Setup-1.2.0.exe",
+        "size": "",
+        "note": ""
+      }
+    }
+  ],
+  "_delivery_comment": "delivery.mode أحد ستة: file · repo · link · service · key · install. الحقل الفارغ لا يُرسم. المدفوع يُقفل تسليمه تلقائياً حتى تأكيد الدفع."
+}

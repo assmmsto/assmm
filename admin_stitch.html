@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Console — لوحة تحكم النشر</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════
+       نظام التصميم — مطابق لمرجع Stitch (Nova Console v2.4)
+       ═══════════════════════════════════════════════ */
+    :root {
+      --font-body:   'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+      --font-latin:  'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+      --font-mono:   'JetBrains Mono', ui-monospace, monospace;
+
+      --bg-app:           #0a0b0f;
+      --bg-surface:       #121317;
+      --bg-elevated:      #1a1b20;
+      --bg-card:          #181a1f;
+      --bg-input:         #0e0f14;
+
+      --border-subtle:    rgba(255,255,255,.06);
+      --border-default:   #2a2b30;
+      --border-strong:    #38393e;
+
+      --text-primary:     #e3e2e8;
+      --text-secondary:   #a4a6b3;
+      --text-tertiary:    #6e6f7d;
+      --text-disabled:    #454652;
+
+      --primary:          #f59e0b;
+      --primary-hover:    #fbbf24;
+      --primary-text:     #ffffff;
+      --primary-dim:      rgba(94,106,210,.12);
+      --primary-glow:     rgba(94,106,210,.35);
+
+      --teal:             #1fc59c;
+      --teal-dim:         rgba(31,197,156,.10);
+      --teal-glow:        rgba(31,197,156,.35);
+
+      --warning:          #f59e0b;
+      --error:            #f87171;
+
+      --radius-sm: 6px;
+      --radius:    8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-full: 999px;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      --topbar-h: 56px;
+      --sidebar-w: 232px;
+      --shadow-card: 0 1px 0 rgba(255,255,255,.04) inset, 0 8px 24px rgba(0,0,0,.35);
+    }
+
+    /* ── Reset ── */
+    *,*::before,*::after { box-sizing: border-box; }
+    html,body { margin:0; padding:0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 13px;
+      line-height: 1.5;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    button { font: inherit; cursor: pointer; background:none; border:none; color:inherit; }
+    a { color: inherit; text-decoration: none; }
+    ul { margin:0; padding:0; list-style:none; }
+    ::-webkit-scrollbar { width:8px; height:8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: 400;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      user-select: none;
+    }
+
+    /* ── التخطيط العام: top bar + sidebar (يمين RTL) + main ── */
+    .app {
+      display: grid;
+      grid-template-areas:
+        "topbar topbar"
+        "sidebar main";
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-rows: var(--topbar-h) 1fr;
+      min-height: 100vh;
+    }
+    .topbar { grid-area: topbar; }
+    .sidebar { grid-area: sidebar; }
+    .main { grid-area: main; padding: var(--space-6); }
+
+    /* ════ TOP BAR ════ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: 0 var(--space-5);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-default);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      transition: background-color .15s ease, color .15s ease;
+    }
+    .icon-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+    .search-box {
+      display: flex; align-items: center; gap: var(--space-2);
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      padding: 0 var(--space-3);
+      height: 32px;
+      min-width: 220px;
+    }
+    .search-box:focus-within { border-color: var(--primary-glow); box-shadow: 0 0 0 3px var(--primary-dim); }
+    .search-box kbd {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: 4px;
+      padding: 1px 6px;
+      background: var(--bg-elevated);
+    }
+    .search-box input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text-primary); font-size: 12px;
+      font-family: var(--font-latin);
+    }
+    .search-box input::placeholder { color: var(--text-tertiary); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      height: 32px; padding: 0 var(--space-3);
+      border-radius: var(--radius);
+      font-size: 12px; font-weight: 500;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      transition: all .15s ease;
+    }
+    .btn:hover { background: var(--border-default); border-color: var(--border-strong); }
+    .btn .material-symbols-outlined { font-size: 16px; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: transparent;
+      box-shadow: 0 0 0 1px var(--primary-glow) inset, 0 4px 12px var(--primary-dim);
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 10px; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 500;
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-default);
+      font-family: var(--font-latin);
+    }
+    .badge-success { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-glow); }
+    .badge-primary { color: var(--primary-text); background: var(--primary); border-color: transparent; }
+
+    .live-dot {
+      width: 6px; height: 6px; border-radius: var(--radius-full);
+      background: var(--teal);
+      box-shadow: 0 0 0 0 var(--teal-glow);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 var(--teal-glow); }
+      50%     { box-shadow: 0 0 0 4px transparent; }
+    }
+
+    .topbar-center .meta {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      font-size: 12px;
+    }
+    .topbar-center .meta-title {
+      font-weight: 600; color: var(--text-primary);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .topbar-center .meta-sub {
+      color: var(--text-tertiary); font-size: 11px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .topbar-right { gap: var(--space-4); }
+    .brand {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-primary); font-weight: 600;
+      font-family: var(--font-latin);
+    }
+    .brand-mark {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--primary); color: white;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+
+    /* ════ SIDEBAR ════ */
+    .sidebar {
+      background: var(--bg-surface);
+      border-inline-start: 1px solid var(--border-default);
+      padding: var(--space-3) 0;
+      display: flex; flex-direction: column;
+      position: sticky; top: var(--topbar-h);
+      height: calc(100vh - var(--topbar-h));
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: 10px var(--space-5);
+      color: var(--text-secondary);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; user-select: none;
+      transition: all .15s ease;
+      position: relative;
+    }
+    .nav-item .material-symbols-outlined { font-size: 18px; }
+    .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .nav-item.active {
+      color: var(--text-primary);
+      background: var(--primary-dim);
+    }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0; top: 8px; bottom: 8px;
+      width: 3px;
+      background: var(--primary);
+      border-radius: 0 2px 2px 0;
+    }
+    .nav-item .nav-meta {
+      margin-inline-start: auto;
+      font-size: 11px; color: var(--text-tertiary);
+      font-family: var(--font-latin);
+    }
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border-default);
+      font-size: 11px; color: var(--text-tertiary);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .perf-line {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-latin);
+    }
+
+    /* ════ MAIN ════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex; flex-direction: column; gap: var(--space-3);
+      position: relative;
+      transition: border-color .15s ease;
+    }
+    .stat-card:hover { border-color: var(--border-strong); }
+    .stat-card .stat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--text-tertiary); font-size: 11px;
+      font-family: var(--font-latin);
+    }
+    .stat-card .stat-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+    }
+    .stat-card .stat-icon .material-symbols-outlined { font-size: 16px; }
+    .stat-card .stat-value {
+      font-family: var(--font-latin);
+      font-size: 28px; font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .stat-card .stat-note {
+      font-size: 11px; color: var(--text-tertiary);
+      font-family: var(--font-latin);
+    }
+    .stat-card .progress {
+      height: 3px; background: var(--bg-elevated); border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .stat-card .progress > div {
+      height: 100%; width: 70%;
+      background: var(--primary);
+      border-radius: var(--radius-full);
+    }
+    .stat-card.green .progress > div { background: var(--teal); }
+    .stat-card.green .stat-icon { color: var(--teal); background: var(--teal-dim); }
+    .stat-card .badge { align-self: flex-start; }
+    .stat-card .stat-note.tokens {
+      font-family: var(--font-mono);
+      color: var(--teal);
+    }
+
+    /* شريط المزامنة العلوي */
+    .sync-bar {
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-5);
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+    .sync-bar .seg { display: flex; align-items: center; gap: 6px; }
+    .sync-bar .seg .material-symbols-outlined { font-size: 16px; color: var(--primary); }
+    .sync-bar .pill {
+      padding: 2px 10px;
+      background: var(--primary-dim);
+      color: var(--primary);
+      border-radius: var(--radius-full);
+      font-family: var(--font-latin);
+      font-weight: 500;
+    }
+
+    /* شريط الفلاتر */
+    .filters-bar {
+      display: flex; align-items: center; gap: var(--space-3);
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap;
+    }
+    .filters-bar .search-input {
+      flex: 1; min-width: 280px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      padding: 0 var(--space-4);
+      height: 36px;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-latin);
+      outline: none;
+    }
+    .filters-bar .search-input:focus { border-color: var(--primary-glow); box-shadow: 0 0 0 3px var(--primary-dim); }
+    .filters-bar .search-input::placeholder { color: var(--text-tertiary); }
+
+    /* ════ TABLE ════ */
+    .table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    table.products {
+      width: 100%; border-collapse: collapse;
+      font-family: var(--font-latin);
+    }
+    table.products thead th {
+      text-align: start;
+      padding: var(--space-3) var(--space-4);
+      font-size: 11px; font-weight: 500;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-default);
+    }
+    table.products tbody td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    table.products tbody tr:last-child td { border-bottom: none; }
+    table.products tbody tr:hover { background: rgba(94,106,210,.04); }
+
+    table.products .check-cell { width: 32px; }
+    table.products input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 14px; height: 14px;
+    }
+    table.products .id-cell {
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    table.products .product-cell { display: flex; align-items: center; gap: var(--space-3); }
+    table.products .product-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    table.products .product-icon .material-symbols-outlined { font-size: 16px; }
+    table.products .product-name { font-weight: 600; color: var(--text-primary); }
+    table.products .product-type {
+      display: inline-block;
+      padding: 2px 8px;
+      margin-top: 4px;
+      font-size: 10px; font-weight: 600;
+      border-radius: var(--radius-sm);
+      background: var(--primary-dim);
+      color: var(--primary);
+    }
+    table.products .platform-cell { color: var(--text-secondary); font-size: 11px; line-height: 1.4; }
+    table.products .price-cell.free {
+      color: var(--teal); font-weight: 600;
+    }
+    table.products .price-cell.paid {
+      color: var(--text-primary); font-weight: 600;
+      font-family: var(--font-latin);
+    }
+    table.products .stats-cell {
+      font-weight: 600; color: var(--text-primary);
+      font-family: var(--font-latin);
+    }
+    table.products .stats-cell small {
+      display: block; color: var(--text-tertiary); font-weight: 400; margin-top: 2px;
+    }
+    table.products .actions-cell {
+      display: flex; gap: 4px; justify-content: flex-end;
+    }
+    table.products .actions-cell button {
+      width: 28px; height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      transition: all .15s ease;
+    }
+    table.products .actions-cell button:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    table.products .actions-cell .danger:hover { color: var(--error); }
+
+    /* شارة الحالة */
+    .status-toggle {
+      position: relative;
+      display: inline-flex; align-items: center;
+      width: 36px; height: 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background-color .15s ease;
+    }
+    .status-toggle.on { background: var(--teal-dim); border-color: var(--teal-glow); }
+    .status-toggle::after {
+      content: '';
+      width: 12px; height: 12px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      position: absolute;
+      inset-inline-start: 2px;
+      transition: all .2s ease;
+    }
+    .status-toggle.on::after {
+      inset-inline-start: 22px;
+      background: var(--teal);
+      box-shadow: 0 0 6px var(--teal-glow);
+    }
+    .status-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-family: var(--font-latin);
+    }
+    .status-toggle.on + .status-label { color: var(--teal); }
+
+    /* Pagination footer */
+    .table-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-4);
+      border-top: 1px solid var(--border-default);
+      background: var(--bg-card);
+      font-size: 11px; color: var(--text-tertiary);
+      font-family: var(--font-latin);
+      flex-wrap: wrap; gap: var(--space-3);
+    }
+    .pagination {
+      display: flex; align-items: center; gap: var(--space-1);
+    }
+    .pagination button {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+      transition: all .15s ease;
+      font-family: var(--font-latin);
+      font-size: 12px;
+    }
+    .pagination button:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .pagination button.active {
+      background: var(--primary-dim);
+      color: var(--primary);
+      border-color: var(--primary-glow);
+    }
+    .pagination button.icon { width: 28px; }
+    .pagination button.icon .material-symbols-outlined { font-size: 16px; }
+
+    /* ════ MODAL ════ */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      width: min(560px, calc(100vw - 32px));
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+      box-shadow: var(--shadow-card);
+    }
+    .modal-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--border-default);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { margin:0; font-size: 16px; font-weight: 600; }
+    .modal-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+    .modal-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border-default);
+      display: flex; gap: var(--space-2); justify-content: flex-end;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+    .field input, .field select, .field textarea {
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      padding: 0 var(--space-3);
+      height: 34px;
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      font-family: var(--font-latin);
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--primary-glow);
+      box-shadow: 0 0 0 3px var(--primary-dim);
+    }
+    .field textarea { height: 80px; padding: var(--space-2) var(--space-3); resize: vertical; font-family: var(--font-body); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+    /* ════ RESPONSIVE ════ */
+    @media (max-width: 1024px) {
+      .app { grid-template-columns: 0 1fr; }
+      .sidebar { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .topbar-center { display: none; }
+      .topbar-left .search-box { min-width: 0; }
+    }
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .topbar { padding: 0 var(--space-3); }
+      .main { padding: var(--space-4); }
+      .filters-bar { flex-direction: column; align-items: stretch; }
+      .filters-bar .search-input { min-width: 0; }
+      table.products { font-size: 11px; }
+      table.products thead th, table.products tbody td { padding: var(--space-2); }
+      .topbar-left { gap: 4px; }
+      .search-box { min-width: 140px !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ════ TOP BAR ════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn" title="المستودع">
+        <span class="material-symbols-outlined">hub</span>
+      </button>
+      <button class="icon-btn" title="سجل Git">
+        <span class="material-symbols-outlined">history_edu</span>
+      </button>
+      <div class="search-box">
+        <kbd>Ctrl+K</kbd>
+        <input type="search" placeholder="بحث سريع..." aria-label="بحث سريع">
+      </div>
+      <button class="btn" title="حفظ JSON">
+        <span class="material-symbols-outlined">save</span>
+        حفظ JSON
+      </button>
+      <button class="btn-primary btn" id="syncBtn" title="مزامنة مع GitHub">
+        <span class="material-symbols-outlined">sync</span>
+        مزامنة GitHub الآن
+      </button>
+    </div>
+
+    <div class="topbar-center">
+      <div class="meta">
+        <div class="meta-title">
+          <span class="badge badge-success">
+            <span class="live-dot"></span>
+            Sync Active
+          </span>
+          لوحة تحكم النشر — الإدارة المُهيّرة
+        </div>
+        <div class="meta-sub">
+          username/nova-store : branch:main
+          <span class="material-symbols-outlined" style="font-size:13px">commit</span>
+          GitHub
+        </div>
+        <div class="meta-sub">الأمر الرئيسي: 4 · الأمر الصغير: 5 · الأمر المتوسط: 5</div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <span class="badge">v2.4</span>
+      <span class="brand">
+        <span class="brand-mark">N</span>
+        Nova Console
+        <span class="brand-mark" style="background:var(--text-tertiary);color:var(--bg-app)">N</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <ul>
+      <li class="nav-item active">
+        <span class="material-symbols-outlined">dashboard</span>
+        لوحة الإدارة
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">settings</span>
+        إعدادات لوحة الإدارة
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">rocket_launch</span>
+        عمليات النشر والتصميم
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">insights</span>
+        التحليلات والإحصائيات
+        <span class="nav-meta">v2</span>
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">shield</span>
+        أمانة وأمان
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">cloud_upload</span>
+        المزامنة المباشرة GitHub
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">folder_open</span>
+        قوالب الجاهزة
+      </li>
+      <li class="nav-item">
+        <span class="material-symbols-outlined">palette</span>
+        الديكورات النهائية
+      </li>
+    </ul>
+    <div class="sidebar-bottom">
+      <div class="perf-line">
+        <span class="material-symbols-outlined" style="font-size:14px;color:var(--teal)">network_ping</span>
+        سجل التصفح الفرعي 42ms
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <main class="main">
+    <!-- بطاقات الإحصاءات -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span>GitHub Token</span>
+          <span class="stat-icon"><span class="material-symbols-outlined">key</span></span>
+        </div>
+        <div class="stat-value">••••71aX</div>
+        <span class="badge badge-success">نشط</span>
+        <div class="stat-note tokens">localStorage: ghp-•••71aX</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span>إجمالي التحميلات</span>
+          <span class="stat-icon"><span class="material-symbols-outlined">downloading</span></span>
+        </div>
+        <div class="stat-value">45,280</div>
+        <span class="stat-note">نمو +18.4%</span>
+        <div class="progress"><div style="width:70%"></div></div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-header">
+          <span>الإيرادات المحدّدة</span>
+          <span class="stat-icon"><span class="material-symbols-outlined">lightbulb</span></span>
+        </div>
+        <div class="stat-value">14</div>
+        <span class="badge badge-success">ينتظر الدفع</span>
+        <div class="progress"><div style="width:42%;background:var(--teal)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span>عدد التنزيلات الكلي</span>
+          <span class="stat-icon"><span class="material-symbols-outlined">inventory</span></span>
+        </div>
+        <div class="stat-value">28</div>
+        <span class="stat-note" style="color:var(--primary)">14 منتهي · 31 قيد</span>
+        <div class="progress"><div style="width:62%"></div></div>
+      </div>
+    </div>
+
+    <!-- شريط المزامنة -->
+    <div class="sync-bar">
+      <span class="seg">
+        <span class="material-symbols-outlined">flash_on</span>
+        النسخ الاحتياطي وممر النشر
+      </span>
+      <span class="seg">
+        <span class="material-symbols-outlined">code</span>
+        رابط GitHub API و رخصة
+      </span>
+      <span class="pill">القرائح للزوار 14</span>
+      <span class="seg">
+        <span class="material-symbols-outlined">settings_ethernet</span>
+        الإدارة المضمنة للمستودع
+      </span>
+      <span class="pill">28</span>
+    </div>
+
+    <!-- شريط الفلاتر -->
+    <div class="filters-bar">
+      <button class="btn btn-primary" id="addProductBtn">
+        <span class="material-symbols-outlined">add_box</span>
+        إضافة منتج جديد +
+      </button>
+      <button class="btn">
+        <span class="material-symbols-outlined">filter_list</span>
+        كل الفلاتر
+        <span class="material-symbols-outlined">arrow_drop_up</span>
+      </button>
+      <button class="btn">
+        <span class="material-symbols-outlined">file_download</span>
+        حفظ JSON
+        <span class="material-symbols-outlined">arrow_drop_up</span>
+      </button>
+      <input type="search" class="search-input" id="tableSearch"
+             placeholder="ابحث بالاسم، المعرف، أو الوسم...">
+    </div>
+
+    <!-- الجدول -->
+    <div class="table-wrap">
+      <table class="products" id="productsTable">
+        <thead>
+          <tr>
+            <th class="check-cell"><input type="checkbox" id="selectAll"></th>
+            <th>المعرف (ID)</th>
+            <th>المنتج والنوع</th>
+            <th>المنصة والإصدار</th>
+            <th>السعر</th>
+            <th>إحصائيات التنزيل</th>
+            <th>الحالة</th>
+            <th style="text-align:end">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="productsBody"></tbody>
+      </table>
+      <div class="table-footer">
+        <span id="tableSummary">عرض 0 من أصل 0 منتج</span>
+        <div class="pagination" id="pagination">
+          <button class="icon" data-action="prev" title="السابق">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          <button class="active" data-page="1">1</button>
+          <button data-page="2">2</button>
+          <button data-page="3">3</button>
+          <button data-page="4">4</button>
+          <button data-page="5">5</button>
+          <button class="icon" data-action="next" title="التالي">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ════ MODAL: إضافة منتج ════ -->
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>إضافة منتج رقمي جديد</h2>
+      <button class="icon-btn" data-close>
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>اسم المنتج *</label>
+        <input type="text" id="formName" placeholder="مثال: Nova Cloud Proxy">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>نوع الملف *</label>
+          <select id="formType">
+            <option value="CLI">CLI</option>
+            <option value="EXE">EXE</option>
+            <option value="API">API</option>
+            <option value="APK">APK</option>
+            <option value="WEB">WEB</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>السعر ($ أو 0 للمجاني)</label>
+          <input type="number" id="formPrice" value="0" min="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>الوصف القصير *</label>
+        <input type="text" id="formShort" placeholder="سطر واحد يشرح ماهية الأداة وفائدتها">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>المنصة / التوافق</label>
+          <input type="text" id="formPlatform" placeholder="Windows, macOS, Linux, Universal">
+        </div>
+        <div class="field">
+          <label>رقم الإصدار</label>
+          <input type="text" id="formVersion" value="v1.0.0">
+        </div>
+      </div>
+      <div class="field">
+        <label>رابط التحميل أو الإصدار *</label>
+        <input type="url" id="formDownloadUrl" placeholder="https://github.com/...">
+      </div>
+      <div class="field">
+        <label>الوسوم والميزات (Tags)</label>
+        <input type="text" id="formTags" placeholder="cli, fast-sync, opensource">
+      </div>
+      <div class="field">
+        <label>الوصف التفصيلي (Markdown)</label>
+        <textarea id="formLongDesc" placeholder="ملاحظات الإصدار، المتطلبات، طريقة الاستخدام"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-close>إلغاء</button>
+      <button class="btn btn-primary" id="saveProductBtn">
+        <span class="material-symbols-outlined">done_all</span>
+        حفظ المنتج في القائمة
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════
+//  بيانات تجريبية (28 منتجاً — مطابقة لمرجع Stitch)
+// ═══════════════════════════════════════════════
+const TYPE_META = {
+  CLI: { icon: 'terminal',         label: 'CLI' },
+  EXE: { icon: 'desktop_windows', label: 'EXE' },
+  API: { icon: 'api',             label: 'API' },
+  APK: { icon: 'android',         label: 'APK' },
+  WEB: { icon: 'language',        label: 'WEB' },
+};
+
+const PRODUCTS = [
+  { id:'PRD-0104', name:'Nova CLI Sync Engine', type:'CLI', platform:'Linux / macOS / Win', sub:'x86_64 / arm64', version:'v2.1.0', price:0, downloads:18420, status:true, tags:['cli','sync'] },
+  { id:'PRD-0105', name:'Nova Mobile Hub Client', type:'APK', platform:'Android 11+', sub:'Universal APK', version:'v1.4.2', price:0, downloads:12190, status:true, tags:['android','mobile'] },
+  { id:'PRD-0106', name:'Nova Telemetry Studio Pro', type:'EXE', platform:'Windows 10/11', sub:'Standalone Installer', version:'v3.0.1', price:29, downloads:8640, status:true, tags:['desktop','telemetry'] },
+  { id:'PRD-0107', name:'Nova Metrics Gateway Worker', type:'API', platform:'Node.js / Deno', sub:'Cloudflare Workers', version:'v0.9.4-beta', price:0, downloads:6030, status:false, tags:['api','edge'] },
+  { id:'PRD-0108', name:'Nova CMS Starter Kit', type:'WEB', platform:'Static / SSR', sub:'Astro + Tailwind', version:'v1.2.0', price:19, downloads:4870, status:true, tags:['web','cms'] },
+  { id:'PRD-0109', name:'Nova Auth Service', type:'API', platform:'Docker', sub:'JWT + OAuth2', version:'v2.4.1', price:39, downloads:9210, status:true, tags:['auth','security'] },
+  { id:'PRD-0110', name:'Nova Disk Wiper', type:'EXE', platform:'Windows 10+', sub:'Secure Erase', version:'v1.1.0', price:12, downloads:3210, status:true, tags:['security','utility'] },
+  { id:'PRD-0111', name:'Nova Log Forwarder', type:'CLI', platform:'Cross-platform', sub:'Single Binary', version:'v3.2.0', price:0, downloads:14550, status:true, tags:['logs','observability'] },
+  { id:'PRD-0112', name:'Nova Invoice Generator', type:'WEB', platform:'Browser', sub:'PDF + QR', version:'v1.0.3', price:9, downloads:6720, status:true, tags:['business','pdf'] },
+  { id:'PRD-0113', name:'Nova WireGuard Manager', type:'EXE', platform:'Windows / macOS', sub:'Tauri Desktop', version:'v0.6.0', price:24, downloads:2180, status:false, tags:['vpn','networking'] },
+  { id:'PRD-0114', name:'Nova Static Site Builder', type:'CLI', platform:'Cross-platform', sub:'Zero Dependencies', version:'v2.0.0', price:0, downloads:21030, status:true, tags:['cli','static'] },
+  { id:'PRD-0115', name:'Nova Realtime Board', type:'WEB', platform:'Browser', sub:'WebSocket', version:'v1.5.1', price:15, downloads:3940, status:true, tags:['realtime','collab'] },
+  { id:'PRD-0116', name:'Nova Backup Scheduler', type:'EXE', platform:'Windows Server', sub:'Cron + S3', version:'v3.4.0', price:49, downloads:1820, status:true, tags:['backup','ops'] },
+  { id:'PRD-0117', name:'Nova Markdown Editor', type:'APK', platform:'Android 9+', sub:'Material 3', version:'v2.1.0', price:0, downloads:7830, status:true, tags:['editor','mobile'] },
+  { id:'PRD-0118', name:'Nova Redis Toolkit', type:'CLI', platform:'Cross-platform', sub:'Multi-cluster', version:'v1.7.2', price:18, downloads:2910, status:true, tags:['redis','ops'] },
+  { id:'PRD-0119', name:'Nova Doc Search Engine', type:'API', platform:'Self-hosted', sub:'Elasticsearch', version:'v2.2.0', price:79, downloads:1240, status:false, tags:['search','enterprise'] },
+  { id:'PRD-0120', name:'Nova Color Palette Studio', type:'WEB', platform:'Browser', sub:'WCAG A11y', version:'v1.3.0', price:0, downloads:5310, status:true, tags:['design','a11y'] },
+  { id:'PRD-0121', name:'Nova Network Scanner', type:'CLI', platform:'Linux / macOS', sub:'IPv4 + IPv6', version:'v0.8.5', price:14, downloads:4520, status:true, tags:['networking','security'] },
+  { id:'PRD-0122', name:'Nova PWA Starter', type:'WEB', platform:'Browser', sub:'Workbox + Tailwind', version:'v1.0.0', price:0, downloads:11920, status:true, tags:['pwa','starter'] },
+  { id:'PRD-0123', name:'Nova To-Do Sync', type:'APK', platform:'Android 8+', sub:'Offline-first', version:'v1.2.4', price:0, downloads:6430, status:true, tags:['productivity','mobile'] },
+  { id:'PRD-0124', name:'Nova CI Runner', type:'EXE', platform:'Linux Server', sub:'GitHub Actions', version:'v2.0.1', price:0, downloads:8740, status:true, tags:['ci','devops'] },
+  { id:'PRD-0125', name:'Nova QR Code Generator', type:'WEB', platform:'Browser', sub:'SVG + PNG', version:'v1.4.0', price:0, downloads:15340, status:true, tags:['utility','web'] },
+  { id:'PRD-0126', name:'Nova DB Migrator', type:'CLI', platform:'Cross-platform', sub:'Postgres + MySQL', version:'v3.1.2', price:22, downloads:3120, status:true, tags:['db','devops'] },
+  { id:'PRD-0127', name:'Nova SSH Tunneler', type:'CLI', platform:'Linux / macOS', sub:'Single Binary', version:'v1.0.4', price:0, downloads:5980, status:true, tags:['ssh','networking'] },
+  { id:'PRD-0128', name:'Nova Compress Anything', type:'EXE', platform:'Windows 10+', sub:'7z + Zstd', version:'v2.3.0', price:7, downloads:10120, status:true, tags:['utility','compression'] },
+  { id:'PRD-0129', name:'Nova Form Builder', type:'WEB', platform:'Browser', sub:'Drag & Drop', version:'v1.6.0', price:29, downloads:3640, status:false, tags:['forms','web'] },
+  { id:'PRD-0130', name:'Nova Webhook Router', type:'API', platform:'Self-hosted', sub:'Multi-tenant', version:'v0.5.1', price:34, downloads:850, status:true, tags:['api','webhooks'] },
+  { id:'PRD-0131', name:'Nova Icon Forge', type:'CLI', platform:'Cross-platform', sub:'SVG Sprite', version:'v1.1.0', price:0, downloads:4280, status:true, tags:['design','cli'] },
+];
+
+// ═══════════════════════════════════════════════
+//  عرض الجدول
+// ═══════════════════════════════════════════════
+const $  = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+function formatPrice(p) {
+  return p > 0 ? `<span dir="ltr">$${p.toFixed(2)}</span>` : '<span>(Free)</span>';
+}
+function escHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderTable(query = '') {
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? PRODUCTS.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.id.toLowerCase().includes(q) ||
+        (p.tags ?? []).some(t => t.toLowerCase().includes(q)))
+    : PRODUCTS;
+
+  const tbody = $('#productsBody');
+  tbody.innerHTML = filtered.map(p => {
+    const meta = TYPE_META[p.type] ?? { icon:'category', label: p.type };
+    const statusLabel = p.status ? 'نشط' : 'مخفي';
+    return `
+      <tr data-id="${escHtml(p.id)}">
+        <td class="check-cell"><input type="checkbox" class="row-check"></td>
+        <td class="id-cell">#${escHtml(p.id)}</td>
+        <td>
+          <div class="product-cell">
+            <span class="product-icon"><span class="material-symbols-outlined">${meta.icon}</span></span>
+            <div>
+              <div class="product-name">${escHtml(p.name)}</div>
+              <span class="product-type">${escHtml(meta.label)}</span>
+            </div>
+          </div>
+        </td>
+        <td class="platform-cell">
+          ${escHtml(p.platform)}<br>
+          <small>${escHtml(p.sub)}</small>
+        </td>
+        <td class="price-cell ${p.price ? 'paid' : 'free'}">${formatPrice(p.price)}</td>
+        <td class="stats-cell">
+          ${p.downloads.toLocaleString('ar-EG')}
+          <small>تنزيل</small>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="status-toggle ${p.status ? 'on' : ''}" data-toggle="${escHtml(p.id)}"
+                    aria-pressed="${p.status}" title="تبديل الحالة"></button>
+            <span class="status-label">${statusLabel}</span>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button title="تعديل" data-action="edit" data-id="${escHtml(p.id)}">
+            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+          </button>
+          <button class="danger" title="حذف" data-action="del" data-id="${escHtml(p.id)}">
+            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  $('#tableSummary').textContent = `عرض ${filtered.length} من أصل ${PRODUCTS.length} منتج`;
+}
+
+// ═══════════════════════════════════════════════
+//  تفاعلات
+// ═══════════════════════════════════════════════
+document.addEventListener('click', (e) => {
+  // شريط التنقل الجانبي
+  const navItem = e.target.closest('.nav-item');
+  if (navItem) {
+    $$('.nav-item').forEach(n => n.classList.remove('active'));
+    navItem.classList.add('active');
+    return;
+  }
+
+  // تبديل الحالة
+  const toggle = e.target.closest('[data-toggle]');
+  if (toggle) {
+    const id = toggle.dataset.toggle;
+    const p = PRODUCTS.find(x => x.id === id);
+    if (p) {
+      p.status = !p.status;
+      toggle.classList.toggle('on', p.status);
+      toggle.setAttribute('aria-pressed', p.status);
+      toggle.nextElementSibling.textContent = p.status ? 'نشط' : 'مخفي';
+    }
+    return;
+  }
+
+  // pagination
+  const pageBtn = e.target.closest('[data-page]');
+  if (pageBtn) {
+    $$('#pagination button[data-page]').forEach(b => b.classList.remove('active'));
+    pageBtn.classList.add('active');
+    return;
+  }
+  if (e.target.closest('[data-action="prev"]')) {
+    const cur = $('#pagination button.active');
+    const prev = cur?.previousElementSibling;
+    if (prev?.dataset.page) prev.click();
+    return;
+  }
+  if (e.target.closest('[data-action="next"]')) {
+    const cur = $('#pagination button.active');
+    const next = cur?.nextElementSibling;
+    if (next?.dataset.page) next.click();
+    return;
+  }
+
+  // مودال
+  if (e.target.closest('[data-close]') || e.target.classList.contains('modal-backdrop')) {
+    $('#addModal').classList.remove('open');
+    return;
+  }
+  if (e.target.closest('#addProductBtn')) {
+    $('#addModal').classList.add('open');
+    return;
+  }
+  if (e.target.closest('#syncBtn')) {
+    const btn = $('#syncBtn');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite">progress_activity</span> جاري المزامنة...';
+    btn.style.pointerEvents = 'none';
+    setTimeout(() => { btn.innerHTML = original; btn.style.pointerEvents = ''; }, 1400);
+    return;
+  }
+  if (e.target.closest('#saveProductBtn')) {
+    const name = $('#formName').value.trim();
+    if (!name) { $('#formName').focus(); return; }
+    const newId = 'PRD-' + String(1000 + Math.floor(Math.random() * 9000));
+    PRODUCTS.unshift({
+      id: newId, name,
+      type: $('#formType').value,
+      platform: $('#formPlatform').value || 'Universal',
+      sub: '',
+      version: $('#formVersion').value || 'v1.0.0',
+      price: Number($('#formPrice').value) || 0,
+      downloads: 0, status: true,
+      tags: $('#formTags').value.split(',').map(t => t.trim()).filter(Boolean),
+    });
+    renderTable($('#tableSearch').value);
+    $('#addModal').classList.remove('open');
+    $$('#addModal input, #addModal textarea').forEach(el => { if (el.type !== 'number') el.value = ''; });
+    $('#formPrice').value = 0;
+    return;
+  }
+
+  // تحديد الكل
+  if (e.target.id === 'selectAll') {
+    $$('.row-check').forEach(cb => cb.checked = e.target.checked);
+    return;
+  }
+});
+
+// بحث فوري
+$('#tableSearch')?.addEventListener('input', (e) => renderTable(e.target.value));
+$('#topbarSearch')?.addEventListener('input', (e) => renderTable(e.target.value));
+
+// تهيئة أولية
+renderTable();
+
+// CSS إضافي: دوران أيقونة المزامنة
+const extraCss = document.createElement('style');
+extraCss.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(extraCss);
+</script>
+</body>
+</html>

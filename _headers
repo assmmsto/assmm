@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════
+#  Cloudflare Pages — ترويسات الاستجابة (_headers)
+# ───────────────────────────────────────────────────────────────
+#  هذا الملف يعوّض .htaccess الذي لا يعمل على Cloudflare Pages
+#  (فهو خاص بـ Apache). يقرأه Cloudflare عند النشر ولا يخدمه للزوار.
+#
+#  الصيغة: سطر بعنوان المسار، ثم أسطر مُزاحة بالترويسات.
+#  الحدود: 100 قاعدة كحد أقصى · 2000 حرف لكل سطر.
+#
+#  ما يفعله Cloudflare تلقائياً ولا نحتاجه هنا:
+#    · إعادة التوجيه إلى HTTPS      · الضغط (Brotli + gzip)
+#    · خدمة 404.html تلقائياً        · منع عرض محتويات المجلدات
+# ═══════════════════════════════════════════════════════════════
+
+# ── 1) الأمان — يُطبَّق على كل المسارات ──
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# ── 2) سياسة أمان المحتوى ──
+#  مسموح: نفس الموقع + jsdelivr (qrious) + خطوط Google + Supabase للاتصال.
+#  'unsafe-inline' مطلوب للأنماط فقط لأن الواجهة تستخدم style="..." بكثافة.
+#  formspree مُدرَج لأن لوحة الأدمن تعرضه كعنوان محتمل لنموذج الطلبات —
+#  إضافته هنا تمنع فشلاً صامتاً لاحقاً إن استخدمته.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net https://formspree.io; worker-src 'self'; manifest-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:; object-src 'none'
+
+# ── 3) صفحات HTML — لا تُخزَّن ──
+#  سبب: يجب أن يرى الزائر أي تعديل فوراً، لا نسخة قديمة عالقة.
+#  ⚠️ `/` مطلوب صراحةً: هو المسار الفعلي للصفحة الرئيسية،
+#  و`/*.html` لا يطابقه لأن الرابط لا ينتهي بـ .html.
+/
+  Cache-Control: no-cache, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/*.html
+  Cache-Control: no-cache, must-revalidate
+
+# ── 4) Service Worker — لا يُخزَّن أبداً ──
+#  ⚠️ حرج: لو خُزّن sw.js طويلاً، عجز المتصفح عن رؤية إصدار جديد
+#  فيبقى الزائر على نسخة قديمة من الموقع أسبوعاً كاملاً.
+#  ⚠️ ترتيب القواعد مهم: Cloudflare يطبّق كل قاعدة مطابقة، والأخيرة تغلب.
+#  لذلك قاعدة /sw.js مكتوبة **بعد** /*.js (القسم 5) — وإلا منحتها قاعدة
+#  الـ JS تخزيناً 30 يوماً وأبطلت هذا الحظر تماماً.
+
+# ── 5) الأصول ذات الإصدار (?v=18) — تخزين طويل ──
+#  آمن لأن كل تعديل يرفع الرقم فيتغيّر الرابط نفسه.
+/*.css
+  Cache-Control: public, max-age=2592000
+
+/*.js
+  Cache-Control: public, max-age=2592000
+
+/*.svg
+  Cache-Control: public, max-age=2592000
+
+/*.png
+  Cache-Control: public, max-age=2592000
+
+/*.woff2
+  Cache-Control: public, max-age=2592000
+
+# ── 5ب) Service Worker — يجب أن يبقى بعد /*.js ليلغي تخزينه الطويل ──
+/sw.js
+  Cache-Control: no-cache, must-revalidate
+
+# ── 6) ملفات البيانات — تُتحقق دورياً ──
+#  لأن الأدمن قد يحدّث الأسعار في أي وقت، فلا تُخزَّن طويلاً.
+/data/*
+  Cache-Control: public, max-age=300
+
+# ── 7) بيان التطبيق ──
+/manifest.json
+  Cache-Control: public, max-age=604800
+
+# ── 8) لوحة الأدمن — منع الفهرسة (حماية إضافية فوق وسم noindex) ──
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+
+# ── 9) حجب نطاق المعاينة من محركات البحث ──
+#  روابط *.pages.dev العشوائية لا يجب أن تُفهرَس وتُنافس نطاقك الحقيقي.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex

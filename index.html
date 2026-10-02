@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>معرض الأعمال — منتجات رقمية للمطورين</title>
+  <meta name="description" content="معرض أعمال شخصي بدون سيرفر لعرض وبيع المنتجات الرقمية: أدوات، APIs، قوالب، تطبيقات. دعم دفع عملات رقمية ومحلي، ترخيص رقمي، PWA.">
+  <meta name="theme-color" content="#0d0e12" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="robots" content="index, follow">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <!-- أيقونة التبويب: assets/icon-192.png (تُولَّد من الشعار بـ tools/make-assets.py).
+       كان هنا favicon مضمّن بحرف «N» لاتيني بينما هوية الموقع عربية — أُزيل. -->
+
+  <!-- ═══ المشاركة على وسائل التواصل ═══
+       ⚠️ استبدل https://example.com بنطاقك الحقيقي (مطلوب: الرابط المطلق للصورة).
+       ابحث عن "example.com" في هذا الملف واستبدله كله مرة واحدة. -->
+  <link rel="canonical" href="https://example.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="معرض الأعمال — Nova">
+  <meta property="og:locale" content="ar_AR">
+  <meta property="og:title" content="معرض الأعمال — منتجات رقمية للمطورين">
+  <meta property="og:description" content="أدوات · APIs · قوالب · تطبيقات. دفع بالعملات الرقمية والمحلي، ترخيص رقمي فوري، ويعمل بلا سيرفر.">
+  <meta property="og:url" content="https://example.com/">
+  <meta property="og:image" content="https://example.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="معرض الأعمال — منتجات رقمية للمطوّرين">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="معرض الأعمال — منتجات رقمية للمطورين">
+  <meta name="twitter:description" content="أدوات · APIs · قوالب · تطبيقات. دفع بالعملات الرقمية والمحلي، ترخيص رقمي فوري.">
+  <meta name="twitter:image" content="https://example.com/assets/og-image.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- ═══ الخطوط ═══
+       مُحسَّنة: أُزيلت Playfair Display (غير مستخدمة إطلاقاً في styles.css)
+       وأُزيلت الأوزان 800/900 (غير مستخدمة) — يوفّر ~5 ملفات خط لكل زائر.
+       المُبقى: Cairo 300-700 · Oswald · Space Grotesk · JetBrains Mono.
+       IBM Plex Sans Arabic أُبقيت كخط احتياطي في سلسلة font-family فقط. -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=33">
+</head>
+<body class="bg-background text-on-surface font-body-md custom-scroll">
+  <header class="bg-surface-container border-b border-surface sticky top-0 z-50">
+    <div class="container-main flex items-center justify-between" style="height:64px">
+      <div class="flex items-center gap-space-sm">
+        <img src="assets/logo.svg" width="40" height="40" alt="شعار معرض الأعمال" class="w-10 h-10" id="siteLogo">
+        <span class="font-headline-md text-primary" id="siteTitle">معرض الأعمال</span>
+      </div>
+      <nav class="flex items-center gap-space-md">
+        <a href="#products" class="font-body-sm text-on-surface-variant hover:text-on-surface">المنتجات</a>
+        <a href="#ideas" class="font-body-sm text-on-surface-variant hover:text-on-surface">اقتراحات</a>
+        <a href="#contact" class="font-body-sm text-on-surface-variant hover:text-on-surface">اتصل بنا</a>
+        <a href="#orderTracking" class="font-body-sm flex items-center gap-space-xs text-primary hover:opacity-80" title="تابع طلبك برقم المرجع">
+          <span class="material-symbols-outlined" style="font-size:16px">receipt_long</span>تتبّع طلب
+        </a>
+        <button id="themeToggle" type="button" class="w-9 h-9 rounded-lg bg-surface-container-low border border-surface flex items-center justify-center text-on-surface-variant hover:text-on-surface" aria-label="تبديل المظهر" title="تبديل المظهر">
+          <span class="material-symbols-outlined" style="font-size:20px">dark_mode</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section id="hero" class="relative overflow-hidden bg-surface" style="padding-block:var(--space-2xl)">
+    <div class="absolute inset-0 ambient-grid pointer-events-none"></div>
+    <div class="absolute hero-glow pointer-events-none" style="top:-140px;inset-inline-start:50%;transform:translateX(-50%);width:720px;height:340px;background:rgba(245,158,11,.10);border-radius:9999px;filter:blur(140px)"></div>
+    <div class="relative max-w-5xl mx-auto text-center">
+      <span class="badge badge-indigo mb-space-sm" id="heroBadge">تسليم فوري · ترخيص رقمي · دفع محلي ورقمي</span>
+      <h1 id="heroTitle" class="font-headline-xl hero-title-grad mb-space-md">منتجات رقمية للمطورين</h1>
+      <p id="heroSub" class="font-body-lg text-on-surface-variant max-w-3xl mx-auto mb-space-xl">استكشف أدوات برمجية، APIs، قوالب، وأدوات سطح مكتب جاهزة للإطلاق. الكل في مكان واحد، بلا سيرفر.</p>
+      <div class="flex flex-wrap items-center justify-center gap-space-sm">
+        <a href="#products" class="btn btn-primary btn-size-md">استكشف المنتجات</a>
+        <a href="#ideas" class="btn btn-ghost btn-size-md">ساهم بفكرة</a>
+      </div>
+    </div>
+  </section>
+  <section class="section pt-0" id="products">
+    <div class="container-main">
+      <div class="flex flex-wrap items-center justify-between gap-space-sm">
+        <div class="relative flex-1 max-w-md">
+          <input type="search" id="searchInput" class="input" style="padding-inline-end:2.25rem" placeholder="ابحث عن منتج... (مثال: Dashboard، API)">
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;position:absolute;inset-inline-end:var(--space-sm);top:50%;transform:translateY(-50%)">search</span>
+        </div>
+        <div id="filterBar" class="flex flex-wrap items-center gap-space-xs">
+          <!-- ⚠️ الأزرار تُبنى من app.js حسب الأنواع الموجودة فعلاً في الكتالوج.
+               كان هنا 11 زراً ثابتاً بينما المنتجات تغطّي 5 أنواع فقط،
+               فثلاثة أزرار لم تكن تُظهر شيئاً أبداً. -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container-main mb-space-md" id="orderTracking">
+    <div class="card p-space-md flex flex-wrap items-center gap-space-sm">
+      <span class="material-symbols-outlined text-primary">receipt_long</span>
+      <span class="font-body-md grow">متابعة طلب سابق — أدخل رقم المرجع الذي استلمته عند الشراء:</span>
+      <div class="track-otp" id="trackOtp" data-len="6"></div>
+      <button type="button" class="btn btn-secondary btn-size-md" id="trackBtn">تتبع الطلب</button>
+    </div>
+    <div id="trackResult"></div>
+  </div>
+  <main id="productGrid" class="container-main grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-lg" style="padding-bottom:var(--space-2xl);min-height:200px">
+    <!-- بطاقات المنتجات تُعرض هنا عبر app.js -->
+    <p class="font-body-sm text-on-surface-variant col-span-full" id="emptyState" style="display:none">لا توجد منتجات تطابق بحثك حالياً.</p>
+  </main>
+
+  <!-- شريط الثقة: أرقام الحقيقة بعد المنتجات لا قبلها — الأرقام الصغيرة لا تقوّي متجراً جديداً، الوعود تقوّيه -->
+  <section class="section pt-0">
+    <div class="container-main">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-space-md">
+        <div class="card p-space-md text-center"><div class="text-2xl font-headline-lg font-num text-primary" id="statProducts">—</div><div class="font-label-sm text-on-surface-variant">منتج متوفر</div></div>
+        <div class="card p-space-md text-center"><div class="text-2xl font-headline-lg font-num text-primary" id="statDownloads">—</div><div class="font-label-sm text-on-surface-variant">تحميل منجّز</div></div>
+        <div class="card p-space-md text-center" id="statPaymentsCard" style="display:none"><div class="text-2xl font-headline-lg font-num text-primary" id="statPayments">—</div><div class="font-label-sm text-on-surface-variant">محفظة جاهزة للدفع</div></div>
+        <div class="card p-space-md text-center"><div class="flex items-center justify-center gap-space-xs text-2xl font-headline-lg text-primary"><span class="material-symbols-outlined">verified_user</span>14</div><div class="font-label-sm text-on-surface-variant">يوم ضمان استرجاع</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ بنية المنصة ═══
+       ⚠️ صُحّحت هذه البطاقة: كانت تحمل ادّعاءات غير صحيحة (E2EE، 10ms،
+       CI/CD بنسبة 99.99%، و«بلا قاعدة بيانات» بينما القاعدة تعمل فعلاً).
+       الادّعاء التقني الذي لا يصحّ يهدم الثقة أسرع مما يبنيها. -->
+  <section id="architecture" class="section" style="padding-top:0">
+    <div class="container-main">
+      <div class="card p-space-lg" style="position:relative;overflow:hidden">
+        <div class="ambient-grid absolute inset-0 pointer-events-none" style="opacity:.12"></div>
+        <div class="relative">
+          <div class="flex flex-wrap items-center gap-space-xs mb-space-sm">
+            <span class="badge badge-indigo">ملفات ثابتة · CDN عالمي</span>
+            <span class="badge badge-success">PWA يعمل بلا إنترنت</span>
+            <span class="badge badge-neutral">HTTPS · CSP · HSTS</span>
+          </div>
+          <h2 class="font-headline-lg text-on-surface mb-space-sm">بنية المتجر — ثابت، سريع، وبلا سيرفر تديره</h2>
+          <p class="font-body-md text-on-surface-variant mb-space-md max-w-2xl">
+            كل شيء يُخدَم كملفات ثابتة من شبكة توزيع عالمية — لا سيرفر تنتظره ولا فاتورة استضافة.
+            الطلبات تُسجَّل في قاعدة بيانات مُدارة، ويُفعَّل مفتاح الترخيص بعد تأكيد الدفع.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+            <div class="card-bleed p-space-md">
+              <span class="material-symbols-outlined text-primary" style="font-size:22px">bolt</span>
+              <div class="font-headline-sm text-on-surface mt-space-xs">تحميل فوري</div>
+              <p class="font-body-sm text-on-surface-variant">ملفات ثابتة تُخدَم من أقرب نقطة جغرافية لك — بلا سيرفر ينتظر الطلبات.</p>
+            </div>
+            <div class="card-bleed p-space-md">
+              <span class="material-symbols-outlined text-tertiary" style="font-size:22px">lock</span>
+              <div class="font-headline-sm text-on-surface mt-space-xs">دفع مباشر</div>
+              <p class="font-body-sm text-on-surface-variant">محافظ رقمية أو تحويل بنكي، والتأكيد يدوي — فلا نحتفظ ببيانات بطاقتك إطلاقاً.</p>
+            </div>
+            <div class="card-bleed p-space-md">
+              <span class="material-symbols-outlined text-success" style="font-size:22px">devices</span>
+              <div class="font-headline-sm text-on-surface mt-space-xs">يعمل بلا إنترنت</div>
+              <p class="font-body-sm text-on-surface-variant">تطبيق ويب مثبَّت (PWA) يفتح حتى مع انقطاع الشبكة، على الجوال وسطح المكتب.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-space-xs mt-space-md">
+            <span class="badge badge-neutral font-code-sm">HTML</span>
+            <span class="badge badge-neutral font-code-sm">CSS</span>
+            <span class="badge badge-neutral font-code-sm">JavaScript</span>
+            <span class="badge badge-neutral font-code-sm">Supabase</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ اقتراحات ═══ -->
+  <section id="ideas" class="section" style="padding-top:0">
+    <div class="container-main">
+      <div class="card p-space-lg max-w-2xl mx-auto">
+        <h2 class="font-headline-lg text-on-surface mb-space-sm">ساهم بفكرة</h2>
+        <p class="font-body-md text-on-surface-variant mb-space-md">اقترح أداة أو منتجاً تحب أن تبنيه — أقرأ كل الاقتراحات وأبني الأكثر طلباً.</p>
+        <form id="suggestionForm" class="flex flex-col gap-space-sm">
+          <div>
+            <label class="field-label" for="sugName">اسمك (اختياري)</label>
+            <input id="sugName" type="text" class="input" placeholder="مثال: أحمد" maxlength="60">
+          </div>
+          <div>
+            <label class="field-label" for="sugText">فكرتك</label>
+            <textarea id="sugText" class="input" style="height:auto;min-height:90px;padding-block:var(--space-sm)" placeholder="اكتب فكرتك هنا..." required maxlength="500"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-size-md">إرسال الاقتراح</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ تواصل + Footer ═══ -->
+  <footer id="contact" class="border-t border-surface bg-surface-container">
+    <div class="container-main flex flex-wrap items-center justify-between gap-space-md" style="padding-block:var(--space-xl)">
+      <div>
+        <div class="flex items-center gap-space-sm mb-space-sm">
+          <img src="assets/logo.svg" width="32" height="32" alt="" class="w-8 h-8" id="footerLogo">
+          <span class="font-headline-md" id="footerTitle">معرض الأعمال</span>
+        </div>
+        <p class="font-body-sm text-on-surface-variant">منتجات رقمية جاهزة للمطورين — بلا سيرفر، ترخيص فوري.</p>
+      </div>
+      <div class="font-body-sm text-on-surface-variant flex flex-wrap items-center gap-space-sm">
+        <a href="privacy.html" class="hover:text-on-surface">سياسة الخصوصية</a>
+        <span class="opacity-45">·</span>
+        <a href="terms.html" class="hover:text-on-surface">شروط الاستخدام والاسترجاع</a>
+        <span class="opacity-45">·</span>
+        <a id="contactEmail" href="#" class="hover:text-on-surface">تواصل: —</a>
+      </div>
+    </div>
+    <div class="border-t border-surface">
+      <div class="container-main font-body-sm text-on-surface-variant flex items-center justify-between" style="padding-block:var(--space-sm)">
+        <span>© <span id="year">2025</span> — جميع الحقوق محفوظة</span>
+        <span class="font-code-sm">Static · PWA</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══ Product Details Modal ═══ -->
+  <div class="modal-overlay" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsName">
+    <div class="modal-panel" id="detailsPanel" style="max-width:680px">
+      <button type="button" class="modal-close" data-close="detailsModal" aria-label="إغلاق">✕</button>
+      <div class="modal-body" id="detailsBody"></div>
+    </div>
+  </div>
+
+  <!-- ═══ Checkout Modal ═══ -->
+  <div class="modal-overlay" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="modal-panel" style="max-width:900px">
+      <button type="button" class="modal-close" data-close="checkoutModal" aria-label="إغلاق">✕</button>
+      <div class="modal-header">
+        <h3 id="checkoutTitle" class="font-headline-md">إتمام الشراء</h3>
+      </div>
+      <div class="modal-body">
+       <div class="checkout-layout">
+        <div class="checkout-main">
+        <div class="step-indicator">
+          <div class="step-dot active" id="stepDot1">1</div>
+          <div class="step-line"></div>
+          <div class="step-dot" id="stepDot2">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot" id="stepDot3">3</div>
+        </div>
+        <div id="checkoutStep1">
+          <p class="font-body-md text-on-surface-variant mb-space-md">اختر طريقة الدفع المناسبة لك:</p>
+          <div id="paymentMethods" class="flex flex-col gap-space-sm"></div>
+        </div>
+        <div id="checkoutStep2" style="display:none">
+          <div id="paymentDetails" class="card-bleed p-space-md mb-space-md"></div>
+          <div class="flex items-center gap-space-sm mb-space-md">
+            <input id="couponInput" class="input grow" dir="ltr" placeholder="كود الخصم (مثال: WELCOME10)">
+            <button type="button" class="btn btn-secondary btn-size-md" id="applyCouponBtn" style="flex-shrink:0">تطبيق</button>
+          </div>
+          <div id="checkoutSummary" class="mb-space-md"></div>
+          <div class="flex flex-col gap-space-sm">
+            <div>
+              <label class="field-label" for="payerName">اسمك</label>
+              <input id="payerName" type="text" class="input" placeholder="الاسم كما ظهر في التحويل" required>
+            </div>
+            <div>
+              <label class="field-label" for="payerRef">رقم العملية / إثبات الدفع</label>
+              <input id="payerRef" type="text" class="input" placeholder="TXID أو رقم الحوالة" required>
+            </div>
+            <div>
+              <label class="field-label" for="payerEmail">بريدك الإلكتروني <span class="text-on-surface-variant">(اختياري — لاستلام المفتاح والرابط)</span></label>
+              <input id="payerEmail" type="email" class="input" dir="ltr" placeholder="you@example.com" autocomplete="email">
+            </div>
+          </div>
+        </div>
+        <div id="checkoutStep3" style="display:none">
+          <div class="text-center" style="padding-block:var(--space-lg)">
+            <span class="material-symbols-outlined text-success" style="font-size:56px">check_circle</span>
+            <h4 class="font-headline-md mb-space-sm">تم استلام طلبك!</h4>
+            <p class="font-body-md text-on-surface-variant">سيتم تفعيل الترخيص وإرسال رابط التحميل بعد تأكيد الدفع.</p>
+          </div>
+        </div>
+        </div>
+        <aside class="checkout-sidebar" id="checkoutSidebar"></aside>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost btn-size-md" data-close="checkoutModal">إلغاء</button>
+        <button type="button" class="btn btn-secondary btn-size-md" id="checkoutBack" style="display:none">رجوع</button>
+        <button type="button" class="btn btn-primary btn-size-md" id="checkoutNext">التالي</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Success / Instant Download Modal ═══ -->
+  <div class="modal-overlay" id="successModal" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width:460px">
+      <button type="button" class="modal-close" data-close="successModal" aria-label="إغلاق">✕</button>
+      <div class="modal-body text-center">
+        <span class="material-symbols-outlined text-success" style="font-size:56px">download_done</span>
+        <h3 class="font-headline-lg mb-space-sm">شكراً لك!</h3>
+        <p class="font-body-md text-on-surface-variant mb-space-md">هذه بيانات طلبك — احفظها في مكان آمن:</p>
+        <div id="successDetails" class="card-bleed p-space-md mb-space-md" style="text-align:start"></div>
+        <button type="button" class="btn btn-primary btn-size-md btn-block" id="downloadNowBtn">تحميل الآن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Toast ═══ -->
+  <div id="toast" role="status" aria-live="polite" style="display:flex">
+    <span class="material-symbols-outlined icon" id="toastIcon">info</span>
+    <span class="font-body-md" id="toastMsg"></span>
+  </div>
+
+  <!-- ═══ البيانات المضمّنة (احتياط للعمل بلا خادم) — تُولَّد بـ tools/embed-data.py ═══ -->
+  <script id="nova-data" type="application/json">{"products":{"_comment":"الكتالوج العام — يُنشر علناً. ⚠️ لا تضع هنا أي مفتاح ترخيص أو رابط تسليم سرّي. المفاتيح تعيش في جدول Supabase (products.licenseKeys) وحده، وهي محجوبة عن المفتاح العام بسياسات RLS.","products":[{"id":1,"name":"ConfigForge CLI","slug":"config-forge-cli","short":"أداة سطر أوامر لتوليد وإدارة ملفات الإعداد","long":"يولّد ConfigForge ملفات إعداد (yaml / json / env) من قوالب، يحوّل بين الصيغ، ويدعم متغيّرات سرية آمنة. مثالية للمطورين الذين يديرون بيئات متعددة. يدعم التكامل مع CI/CD.","type":"cli","kind":"cli","platform":"Cross-platform (Windows • macOS • Linux)","price":0,"currency":"USD","version":"2.3.0","features":["توليد إعدادات من القوالب","تحويل yaml ↔ json ↔ env","متغيّرات سرية مشفّرة","تكامل CI/CD"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"install","url":"","inviteUrl":"","isPublic":true,"commands":["npm i -g @nova/config-forge","config-forge init","config-forge apply --env production"],"fileName":"","size":"","note":""}},{"id":2,"name":"Nova UI Kit","slug":"nova-ui-kit","short":"مجموعة مكوّنات واجهة مطوّر احترافية (Figma + Tailwind)","long":"مكتوبة بـ Tailwind CSS ومصممة بدقة، تشمل 48 مكوّناً جاهزاً، نظام لون أساسي، ودعم للوضعين الفاتح والداكن. ملفّات Figma + الكود المصدري.","type":"file","kind":"file","platform":"Figma • Tailwind CSS","price":0,"currency":"USD","version":"1.0.0","features":["48 مكوّناً جاهزاً","Figma + React + Tailwind","دعم الوضع الداكن","قواعد توجيه موحّدة"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"nova-ui-kit-1.0.0.zip","size":"","note":"يشمل ملفات Figma والكود المصدري."}},{"id":3,"name":"Apex Dashboard","slug":"apex-dashboard","short":"لوحة تحكم متكاملة للمشاريع والمهام","long":"منصة متكاملة لإدارة المشاريع والمهام. تدعم الفرق الصغيرة والمتوسطة مع تقارير مفصلة، تحليلات أداء، وتزامن فوري بين الأعضاء.","type":"exe","kind":"exe","platform":"Windows 10+","price":29,"currency":"USD","version":"2.1.0","features":["إدارة مهام متقدّمة","تقارير تفاعلية","تزامن فوري","دعم الفرق حتى 10 أعضاء"],"licenseMode":"key","licenseNote":"ترخيص تجاري دائم مدى الحياة — يشمل تحديثات الإصدارات الكبرى.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"ApexDashboard-Setup-2.1.0.exe","size":"","note":""}},{"id":4,"name":"AuthKit API","slug":"authkit-api","short":"API جاهزة للمصادقة والهوية (JWT + OAuth2)","long":"API Self-hosted جاهزة للمصادقة والهوية. تدعم JWT، OAuth2، SSO، وجدران API. يُشغّل عبر Docker في دقائق.","type":"api","kind":"api","platform":"Docker • Self-hosted","price":19,"currency":"USD","version":"1.2.4","features":["JWT + OAuth2","SSO (Google, GitHub)","حماية JWT مدمجة","توثيق Swagger"],"licenseMode":"key","licenseNote":"ترخيص تجاري — يشمل تحديثات أمان وترخيص لعدد غير محدود من التطبيقات.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"repo","url":"","inviteUrl":"","isPublic":false,"commands":[],"fileName":"","size":"","note":"تُرسَل دعوة الوصول إلى المستودع الخاص بعد تأكيد الدفع."}},{"id":5,"name":"Pulse Monitor","slug":"pulse-monitor","short":"تطبيق أندرويد لمراقبة الخوادم وواجهات API مع إشعارات فورية","long":"يراقب Pulse Monitor حالات الخوادم وزمن الاستجابة وواجهات API، ويرسل إشعارات فورية عند أي انقطاع أو بطء. يتضمن لوحة مباشرة، سجلات قابلة للتصدير، ووضعاً داكناً — بدون أذونات زائدة أو تتبع.","type":"apk","kind":"apk","platform":"Android 8.0+","price":15,"currency":"USD","version":"1.4.2","features":["مراقبة لحظية حتى 20 هدفاً","إشعارات Push فورية","تصدير السجلات CSV","وضع داكن أصيل"],"licenseMode":"key","licenseNote":"ترخيص جهازين لكل مفتاح — تحديثات مجانية لعام كامل.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"PulseMonitor-1.4.2.apk","size":"","note":"فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت."}},{"id":6,"name":"LandingForge","slug":"landing-forge","short":"12 قالب صفحة هبوط جاهزة (HTML + Tailwind) بدعم RTL","long":"حزمة قوالب صفحات هبوط احترافية مبنية بـ HTML وTailwind CSS فقط — بلا اعتماديات أو إطار عمل. تدعم RTL والوضع الداكن، وتشمل صفحات SaaS، منتج رقمي، تطبيق جوال، وملف أعمال. الكود نظيف وقابل للتخصيص في دقائق.","type":"file","kind":"file","platform":"HTML • Tailwind CSS","price":39,"currency":"USD","version":"2.0.1","features":["12 قالباً كاملاً","دعم RTL أصيل","وضع داكن/فاتح","بلا اعتماديات — HTML صافٍ"],"licenseMode":"key","licenseNote":"ترخيص استخدام تجاري لمشاريع غير محدودة — يُمنع إعادة البيع كقوالب.","hiddenFields":["downloadUrl","githubUrl","install"],"status":"active","featured":true,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"landing-forge-2.0.1.zip","size":"","note":""}},{"id":7,"name":"ClipStash","slug":"clipstash","short":"مدير حافظة ذكي لويندوز — حفظ تاريخ النسخ والبحث فيه","long":"أداة سطح مكتب خفيفة تحفظ تاريخ الحافظة (نصوص، روابط، مقتطفات كود) مع بحث فوري واختصارات عامة. تعمل من شريط النظام، تستهلك أقل من 30MB من الذاكرة، وتخزّن البيانات محلياً بالكامل.","type":"exe","kind":"exe","platform":"Windows 10+","price":0,"currency":"USD","version":"1.2.0","features":["تاريخ حافظة حتى 1000 عنصر","بحث فوري","اختصار عام Ctrl+Shift+V","تخزين محلي بالكامل"],"licenseMode":"none","hiddenFields":[],"status":"active","featured":false,"downloads":0,"delivery":{"mode":"file","url":"","inviteUrl":"","isPublic":true,"commands":[],"fileName":"ClipStash-Setup-1.2.0.exe","size":"","note":""}}],"_delivery_comment":"delivery.mode أحد ستة: file · repo · link · service · key · install. الحقل الفارغ لا يُرسم. المدفوع يُقفل تسليمه تلقائياً حتى تأكيد الدفع."},"settings":{"_comment":"إعدادات الموقع — ⚠️ هذا الملف يُنشر علناً. لا تضع فيه أي مفتاح سرّي (githubToken يجب أن يبقى فارغاً). حقول الدفع الفارغة تُخفى تلقائياً من الواجهة حتى تملأها.","platformName":"معرض الأعمال","platformNameEn":"Work Showcase","logoLetter":"ع","logoImage":null,"heroTitle":"منتجات رقمية للمطورين","heroSub":"استكشف أدوات برمجية، واجهات API، قوالب، وتطبيقات جاهزة للإطلاق — بلا سيرفر، ودفع مباشر من محفظة إلى محفظة.","heroBadge":"بلا سيرفر · PWA · محافظ رقمية ومحلية","devName":"أحمد محمد","devTitle":"مهندس برمجيات · مطور أدوات مفتوحة المصدر","contactEmail":"","contactWhatsapp":"","contactGithub":"","contactLinkedin":"","theme":{"default":"dark","allowToggle":true},"_countries_comment":"قائمة الدول المتاحة للمحافظ المحلية — يظهر منها فقط ما له محفظة مُفعّلة. أضف أي دولة هنا ثم أضف محفظة لها من تبويب المحافظ.","countries":{"SY":"سوريا","EG":"مصر","SA":"السعودية","AE":"الإمارات","JO":"الأردن","IQ":"العراق","MA":"المغرب","DZ":"الجزائر","TN":"تونس","LY":"ليبيا","SD":"السودان","YE":"اليمن","PS":"فلسطين","LB":"لبنان","KW":"الكويت","QA":"قطر","BH":"البحرين","OM":"عُمان","TR":"تركيا","OTHER":"دولة أخرى"},"_proof_comment":"مسارات إرسال إثبات الدفع. الفارغ منها لا يُعرض للمشتري.","proof":{"allowUpload":false,"allowWhatsapp":true,"allowEmail":true,"maxImageMb":2,"maxImagePx":1280},"githubToken":"","githubRepo":"","githubBranch":"main","supabaseUrl":"https://qcarxyaxcfgasqkppkjb.supabase.co","supabaseKey":"sb_publishable_3di31UtXQVsvZ14AZjfHpA_4o_0azWQ","adminEmail":"","discounts":[{"code":"WELCOME10","label":"خصم الترحيب 10%","amount":10,"type":"percent","once":true}],"purchasesEndpoint":"","stats":{"productsCount":0,"downloadsCount":0}},"wallets":{"_comment":"المحافظ الموحّدة — نظام واحد بدل نظامين. النوعان: crypto (رقمية) و local (محلية). ⚠️ حقل address/account فارغ يعني «غير مُعدّة» فتُخفى تلقائياً من صفحة الدفع. لا تضع عنواناً تجريبياً: عرض محفظة لا تملكها يعني أن أموال المشتري تُفقد نهائياً. املأها من لوحة الأدمن → تبويب المحافظ.","_fields":{"type":"crypto | local — يحدّد الحقول الظاهرة ونوع الأيقونة","label":"الاسم الظاهر للمشتري","country":"للمحلية فقط: SY · EG · SA … (يظهر كوسم تعريف لا كفلتر)","provider":"للمحلية فقط: شام كاش+ · فودافون كاش …","network":"للرقمية فقط: TRC20 · BEP20 · ERC20 · BTC …","currency":"للعرض فقط: USDT · BTC · SYP · EGP","address":"للرقمية: عنوان الاستقبال العام","account":"للمحلية: رقم المحفظة أو الهاتف","accountName":"للمحلية: اسم صاحب الحساب","qr":"صورة QR مرفوعة (اختياري — وإلا تُولَّد تلقائياً للرقمية)","note":"تعليمات للمشتري — الفارغ لا يُرسم","enabled":"المُطفأة لا تُرسَل للواجهة أصلاً","isDefault":"تظهر أولاً وتُحدَّد تلقائياً"},"wallets":[{"id":"wlt_usdt_trc20","endpointId":"wlt_usdt_trc20","type":"crypto","label":"USDT — Binance","network":"TRC20","currency":"USDT","address":"","qr":"","note":"أرسل على شبكة TRC20 فقط. أي شبكة أخرى تعني فقدان المبلغ نهائياً.","isDefault":true,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_usdt_bep20","endpointId":"wlt_usdt_bep20","type":"crypto","label":"USDT — Trust Wallet","network":"BEP20","currency":"USDT","address":"","qr":"","note":"شبكة BEP20 (BNB Smart Chain) — رسوم منخفضة.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_btc","endpointId":"wlt_btc","type":"crypto","label":"BTC — Trust Wallet","network":"BTC","currency":"BTC","address":"","qr":"","note":"أرسل بـ BTC (Native SegWit) فقط.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_shamcash","endpointId":"wlt_shamcash","type":"local","label":"شام كاش+","country":"SY","provider":"شام كاش+","currency":"SYP","account":"","accountName":"","qr":"","note":"حوّل المبلغ ثم أرسل صورة إشعار التحويل.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_vodafone","endpointId":"wlt_vodafone","type":"local","label":"فودافون كاش","country":"EG","provider":"فودافون كاش","currency":"EGP","account":"","accountName":"","qr":"","note":"","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}},{"id":"wlt_instapay","endpointId":"wlt_instapay","type":"local","label":"إنستاباي","country":"EG","provider":"إنستاباي","currency":"EGP","account":"","accountName":"","qr":"","note":"تحويل فوري بين البنوك والمحافظ.","isDefault":false,"enabled":true,"stats":{"receivedCount":0,"receivedAmount":0,"lastTxid":"","createdAt":""}}]}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="db.js?v=33" defer></script>
+  <script src="app.js?v=33" defer></script>
+</body>
+</html>
