@@ -103,13 +103,13 @@
       "downloads": 0,
       "delivery": {
         "mode": "file",
-        "url": "",
+        "url": "https://assmmsto.github.io/apex-dashboard.zip",
         "inviteUrl": "",
         "isPublic": true,
         "commands": [],
         "fileName": "ApexDashboard-Setup-2.1.0.exe",
         "size": "",
-        "note": ""
+        "note": "⚠️ رابط تجريبي — استبدله برابط التحميل الحقيقي قبل الإطلاق."
       }
     },
     {
@@ -142,13 +142,13 @@
       "downloads": 0,
       "delivery": {
         "mode": "repo",
-        "url": "",
-        "inviteUrl": "",
+        "url": "https://github.com/assmmsto/assmm",
+        "inviteUrl": "https://github.com/assmmsto/assmm",
         "isPublic": false,
         "commands": [],
         "fileName": "",
         "size": "",
-        "note": "تُرسَل دعوة الوصول إلى المستودع الخاص بعد تأكيد الدفع."
+        "note": "⚠️ رابط تجريبي — استبدله بمستودعك الخاص قبل الإطلاق. تُرسَل دعوة الوصول إلى المستودع الخاص بعد تأكيد الدفع."
       }
     },
     {
@@ -181,13 +181,13 @@
       "downloads": 0,
       "delivery": {
         "mode": "file",
-        "url": "",
+        "url": "https://assmmsto.github.io/pulse-monitor.apk",
         "inviteUrl": "",
         "isPublic": true,
         "commands": [],
         "fileName": "PulseMonitor-1.4.2.apk",
         "size": "",
-        "note": "فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت."
+        "note": "⚠️ رابط تجريبي — استبدله قبل الإطلاق. فعّل «التثبيت من مصادر غير معروفة» قبل التثبيت."
       }
     },
     {
@@ -220,13 +220,13 @@
       "downloads": 0,
       "delivery": {
         "mode": "file",
-        "url": "",
+        "url": "https://assmmsto.github.io/landing-forge.zip",
         "inviteUrl": "",
         "isPublic": true,
         "commands": [],
         "fileName": "landing-forge-2.0.1.zip",
         "size": "",
-        "note": ""
+        "note": "⚠️ رابط تجريبي — استبدله قبل الإطلاق."
       }
     },
     {
