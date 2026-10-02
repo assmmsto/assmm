@@ -208,7 +208,7 @@ else:
 
 # ═══ 8) الروابط المحلية في الصفحات ═══
 section('الروابط المحلية')
-for page in ['index.html', 'admin.html']:
+for page in ['index.html', 'admin.html', 'orders.html']:
     html = read(page)
     refs = re.findall(r'(?:src|href)="([^"]+)"', html)
     local = [r for r in refs if not r.startswith(('http', 'data:', '#', 'mailto:', 'tel:', '//'))]

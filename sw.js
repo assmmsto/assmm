@@ -22,6 +22,8 @@ const CORE_ASSETS = [
   'styles.css',
   'db.js',
   'app.js',
+  'orders.html',
+  'orders.js',
   'manifest.json',
   /* الصفحات القانونية + 404: تُخزَّن مسبقاً لأنها قد تُطلب بلا إنترنت،
      ولا تعتمد على بيانات JSON إطلاقاً (نص ثابت). */

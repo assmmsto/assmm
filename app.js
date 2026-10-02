@@ -1048,6 +1048,13 @@ function renderWalletPaymentDetails(wallet) {
       <span class="font-num text-primary" style="font-size:1.35rem" dir="ltr">${esc(formatPrice(total, currency))}</span>
     </div>
 
+    ${!isCrypto ? `
+    <div class="net-warn mb-space-md">
+      <span class="material-symbols-outlined">currency_exchange</span>
+      <span>المبلغ معروض بعملة المنتج <b>${esc(currency)}</b>. حوّله إلى ما يعادله بالعملة المحلية لهذه المحفظة
+      ${wallet.currency ? `(<b dir="ltr">${esc(wallet.currency)}</b>)` : ''} وتأكد منه قبل التحويل — أو تواصل معنا لمعرفة المبلغ الدقيق.</span>
+    </div>` : ''}
+
     ${walletAddressQR(wallet)}
 
     ${rows.length ? `<div class="card-bleed p-space-sm mb-space-md">

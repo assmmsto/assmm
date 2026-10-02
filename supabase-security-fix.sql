@@ -169,23 +169,31 @@ create policy "orders: إدارة للموثّقين"
 
 -- بديل آمن لمتابعة الطلب: دالة تُعيد **صفاً واحداً** بمرجعه فقط،
 -- وبأعمدة محدودة عمداً (بلا payerName/payerRef/payerEmail).
-create or replace function get_order_by_reference(ref text)
+-- ⚠️ يجب أن تتطابق توقيعاتها هنا وفي supabase-final.sql (نفس 11 عموداً)
+--    حتى يكون تشغيل الملفين بأي ترتيب آمناً. أي اختلاف يجعل إعادة تشغيل
+--    أحدهما بعد الآخر تُسقط deliveryUrl/deliveryNote/rejectReason عن المتابعة.
+drop function if exists get_order_by_reference(text);
+create function get_order_by_reference(ref text)
 returns table (
-  reference     text,
-  "productId"   int,
-  "productName" text,
-  total         numeric,
-  currency      text,
-  status        text,
-  "licenseKey"  text,
-  "createdAt"   text
+  reference      text,
+  "productId"    int,
+  "productName"  text,
+  total          numeric,
+  currency       text,
+  status         text,
+  "licenseKey"   text,
+  "deliveryUrl"  text,
+  "deliveryNote" text,
+  "rejectReason" text,
+  "createdAt"    text
 )
 language sql
 security definer
 set search_path = public
 as $$
   select o.reference, o."productId", o."productName", o.total, o.currency,
-         o.status, o."licenseKey", o."createdAt"::text
+         o.status, o."licenseKey", o."deliveryUrl", o."deliveryNote",
+         o."rejectReason", o."createdAt"::text
   from orders o
   where o.reference = ref
   limit 1;
